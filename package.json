@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "deploy": "./scripts/deploy.sh"
   },
   "dependencies": {
     "@lucide/astro": "^1.47.0",
