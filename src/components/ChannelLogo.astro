@@ -6,9 +6,11 @@ interface Props {
   showBadge?: boolean;
 }
 
+import { withBase } from '../lib/path';
+
 const { id, name = '', class: className = 'w-12 h-12 rounded-2xl', showBadge = true } = Astro.props;
 const initialLetter = (name || id).charAt(0).toUpperCase();
-const logoSrc = `${import.meta.env.BASE_URL}creators/${id}.jpg`;
+const logoSrc = withBase(`/creators/${id}.jpg`);
 ---
 
 <div class="relative shrink-0 inline-flex items-center justify-center">

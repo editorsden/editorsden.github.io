@@ -1,5 +1,7 @@
 ---
-const tutorialUrl = `${import.meta.env.BASE_URL}?tab=tutorial`;
+import { withBase } from '../../lib/path';
+
+const tutorialUrl = withBase('?tab=tutorial');
 ---
 <!doctype html>
 <html lang="en">
