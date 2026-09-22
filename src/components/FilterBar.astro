@@ -1,0 +1,177 @@
+---
+import { Search, RotateCcw, LayoutGrid, List } from '@lucide/astro';
+
+const nleList = [
+  'Premiere Pro',
+  'DaVinci Resolve',
+  'Final Cut Pro',
+  'Avid Media Composer'
+];
+
+const categoryList = [
+  'Video Editing',
+  'Format Ingestion',
+  'Automation & AI',
+  'Audio Repair & Cleanup',
+  'Color Grading & VFX',
+  'Workflow & Organization',
+  'Subtitling & Transcription',
+  'Export & Compression'
+];
+---
+
+<div class="space-y-5 mb-10">
+  <!-- Pill Tabs (All Tools, Softwares, Plugins, Tutorials, Hidden Gems) - Centered matching user design scheme -->
+  <div class="flex items-center justify-center gap-2 sm:gap-2.5 flex-wrap" id="type-tabs-container">
+    <button
+      type="button"
+      data-tab-type=""
+      class="type-tab-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer bg-slate-900 text-white border border-slate-800 shadow-sm"
+    >
+      All Tools
+    </button>
+    <button
+      type="button"
+      data-tab-type="software"
+      class="type-tab-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer bg-white/80 hover:bg-white text-slate-700 hover:text-cyan-800 border border-cyan-500/20 hover:border-cyan-400/50 shadow-xs"
+    >
+      Softwares
+    </button>
+    <button
+      type="button"
+      data-tab-type="plugin"
+      class="type-tab-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer bg-white/80 hover:bg-white text-slate-700 hover:text-cyan-800 border border-cyan-500/20 hover:border-cyan-400/50 shadow-xs"
+    >
+      Plugins
+    </button>
+    <button
+      type="button"
+      data-tab-type="tutorial"
+      class="type-tab-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer bg-white/80 hover:bg-white text-slate-700 hover:text-cyan-800 border border-cyan-500/20 hover:border-cyan-400/50 shadow-xs flex items-center gap-1.5"
+    >
+      <span>Tutorials</span>
+      <span class="tutorial-guide-badge text-[11px] font-mono text-cyan-600/70">Guides</span>
+    </button>
+    <button
+      type="button"
+      data-tab-type="gems"
+      class="type-tab-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer bg-white/80 hover:bg-white text-slate-700 hover:text-cyan-800 border border-cyan-500/20 hover:border-cyan-400/50 shadow-xs flex items-center gap-2"
+    >
+      <span>Hidden Gems</span>
+      <span class="gems-star w-4 h-4 rounded-full bg-cyan-50 border border-cyan-300/80 text-cyan-600 text-[10px] flex items-center justify-center font-bold">★</span>
+    </button>
+  </div>
+
+  <!-- Centered Search Input with Cyan Focus Ring & Kbd shortcut -->
+  <div class="max-w-xl mx-auto relative pt-1">
+    <input
+      id="filter-search-input"
+      type="text"
+      placeholder="Search softwares, plugins, bottlenecks (e.g. mkv, silence)..."
+      class="w-full bg-white/90 backdrop-blur-md border border-cyan-500/25 focus:border-cyan-500 rounded-full px-5 py-2.5 sm:py-3 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 pl-11 pr-16 shadow-[0_4px_20px_rgba(14,165,233,0.06)] transition-all"
+    />
+    <Search class="w-4 h-4 text-cyan-500 absolute left-4 top-3 sm:top-3.5 pointer-events-none" />
+    <kbd class="hidden sm:inline-flex items-center px-2 py-0.5 text-[10px] font-mono text-cyan-700 bg-cyan-50/80 border border-cyan-200 rounded-full absolute right-3.5 top-2.5 sm:top-3 pointer-events-none">
+      ⌘K
+    </kbd>
+  </div>
+
+  <!-- NLE Filter Pills & Secondary Filters Centered -->
+  <div class="flex flex-wrap items-center justify-center gap-2 text-xs pt-1">
+    <!-- NLE Filter Pills -->
+    <div class="flex flex-wrap items-center justify-center gap-1.5">
+      <button
+        type="button"
+        data-filter-nle=""
+        class="nle-pill px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer bg-slate-900 text-white border border-slate-900"
+      >
+        All NLEs
+      </button>
+      {nleList.map((nle) => (
+        <button
+          type="button"
+          data-filter-nle={nle}
+          class="nle-pill px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer bg-white/80 hover:bg-white text-slate-600 hover:text-cyan-800 hover:border-cyan-400/50 border border-cyan-500/15 shadow-2xs"
+        >
+          {nle}
+        </button>
+      ))}
+    </div>
+
+    <!-- Dropdowns, Reset & View Mode Toggle -->
+    <div class="flex items-center gap-2">
+      <select
+        id="filter-category-select"
+        class="bg-white/90 border border-cyan-500/20 rounded-full px-3 py-1 text-[11px] text-slate-600 focus:outline-none focus:border-cyan-500 cursor-pointer shadow-2xs"
+      >
+        <option value="">All Categories</option>
+        {categoryList.map((cat) => (
+          <option value={cat}>{cat}</option>
+        ))}
+      </select>
+
+      <select
+        id="filter-os-select"
+        class="bg-white/90 border border-cyan-500/20 rounded-full px-3 py-1 text-[11px] text-slate-600 focus:outline-none focus:border-cyan-500 cursor-pointer shadow-2xs"
+      >
+        <option value="">All Platforms</option>
+        <option value="PC">PC / Desktop</option>
+        <option value="Mobile">Mobile (iOS / Android)</option>
+        <option value="macOS">macOS</option>
+        <option value="Windows">Windows</option>
+        <option value="iOS">iOS</option>
+        <option value="Android">Android</option>
+        <option value="Linux">Linux</option>
+      </select>
+
+      <select
+        id="filter-pricing-select"
+        class="bg-white/90 border border-cyan-500/20 rounded-full px-3 py-1 text-[11px] text-slate-600 focus:outline-none focus:border-cyan-500 cursor-pointer shadow-2xs"
+      >
+        <option value="">All Pricing</option>
+        <option value="Free">Free</option>
+        <option value="One-Time">One-Time</option>
+        <option value="Subscription">Subscription</option>
+        <option value="Freemium">Freemium</option>
+      </select>
+
+      <button
+        id="clear-filters-btn"
+        type="button"
+        class="hidden items-center justify-center gap-1 px-2.5 py-1 text-[11px] font-mono text-slate-500 hover:text-cyan-800 bg-white/90 hover:bg-white border border-cyan-500/20 hover:border-cyan-400/50 rounded-full transition-colors cursor-pointer shadow-2xs"
+        title="Reset all filters"
+      >
+        <RotateCcw class="w-3 h-3 text-cyan-600" />
+        <span>Reset</span>
+      </button>
+
+      <!-- View Mode Toggle (Card Grid vs Compact List) -->
+      <div class="flex items-center bg-white/90 border border-cyan-500/20 rounded-full p-0.5 shadow-2xs ml-1" id="view-mode-toggle-group">
+        <button
+          id="view-mode-grid"
+          type="button"
+          class="view-mode-btn px-2.5 py-1 rounded-full text-xs font-medium transition-all cursor-pointer bg-slate-900 text-white shadow-xs flex items-center gap-1.5"
+          title="Card Grid Mode"
+          aria-label="Card Grid Mode"
+        >
+          <LayoutGrid class="w-3.5 h-3.5" />
+          <span class="hidden md:inline text-[11px] font-sans">Cards</span>
+        </button>
+        <button
+          id="view-mode-list"
+          type="button"
+          class="view-mode-btn px-2.5 py-1 rounded-full text-xs font-medium transition-all cursor-pointer text-slate-500 hover:text-slate-900 flex items-center gap-1.5"
+          title="List Mode"
+          aria-label="List Mode"
+        >
+          <List class="w-3.5 h-3.5" />
+          <span class="hidden md:inline text-[11px] font-sans">List</span>
+        </button>
+      </div>
+
+      <span id="filter-match-count" class="text-[11px] font-mono text-cyan-700/80 pl-1 hidden sm:inline">
+        0 tools
+      </span>
+    </div>
+  </div>
+</div>

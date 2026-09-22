@@ -1,0 +1,72 @@
+---
+interface Props {
+  id: string;
+  name?: string;
+  class?: string;
+}
+
+const { id, name = '', class: className = 'w-11 h-11' } = Astro.props;
+const initialLetter = (name || id).charAt(0).toUpperCase();
+const assetBase = import.meta.env.BASE_URL;
+
+// Official brand logos downloaded directly from verified sources
+const logoMap: Record<string, string> = {
+  'davinci-resolve': '/logos/davinci-resolve.png',
+  'adobe-premiere-pro': '/logos/adobe-premiere-pro.svg',
+  'final-cut-pro': '/logos/final-cut-pro.png',
+  'avid-media-composer': '/logos/avid-media-composer.svg',
+  'adobe-after-effects': '/logos/adobe-after-effects.svg',
+  'capcut': '/logos/capcut.svg',
+  'vn-video-editor': '/logos/vn-video-editor.png',
+  'lumafusion': '/logos/lumafusion.png',
+  'inshot': '/logos/inshot.png',
+  'kinemaster': '/logos/kinemaster.svg',
+  'alight-motion': '/logos/alight-motion.png',
+  'blender': '/logos/blender.svg',
+  'adobe-premiere-rush': '/logos/adobe-premiere-rush.png',
+  'kdenlive': '/logos/kdenlive.svg',
+  'shotcut': '/logos/shotcut.png',
+  'wondershare-filmora': '/logos/wondershare-filmora.png',
+  'handbrake': '/logos/handbrake.png',
+  'losslesscut': '/logos/losslesscut.png',
+  'macwhisper': '/logos/macwhisper.png',
+  'tentacle-sync-studio': '/logos/tentacle-sync-studio.png',
+  'firecut-ai': '/logos/firecut-ai.jpg',
+  'autokroma-influx': '/logos/autokroma-influx.jpg',
+  'excalibur': '/logos/excalibur.jpg',
+  'composite-brush': '/logos/composite-brush.jpg',
+  'grave-robber': '/logos/grave-robber.jpg',
+  'shutter-encoder': '/logos/shutter-encoder.png',
+  'obs-studio': '/logos/obs-studio.svg',
+  'dagger': '/logos/dagger.png',
+  'cockpit': '/logos/cockpit.png',
+  'clipdeck': '/logos/clipdeck.png',
+  'airexplorer': '/logos/airexplorer.png',
+  'gofile': '/logos/gofile.png',
+  'wetransfer': '/logos/wetransfer.svg',
+  'blip': '/logos/blip.png',
+  'raycast': '/logos/raycast.png',
+  'alfred': '/logos/alfred.png',
+  'listary': '/logos/listary.png',
+  'soundly': '/logos/soundly.png',
+  'upscayl': '/logos/upscayl.png',
+};
+
+const logoSrc = logoMap[id] ? `${assetBase}${logoMap[id].replace(/^\//, "")}` : undefined;
+---
+
+<div class={`relative shrink-0 flex items-center justify-center overflow-hidden rounded-2xl bg-white/95 border border-slate-100 shadow-[0_2px_8px_rgba(15,23,42,0.06)] ${className}`}>
+  {logoSrc ? (
+    <img 
+      src={logoSrc} 
+      alt={`${name || id} logo`} 
+      class="w-full h-full object-contain p-1 rounded-2xl"
+      loading="lazy"
+      decoding="async"
+    />
+  ) : (
+    <div class="w-full h-full rounded-2xl bg-slate-900 text-white flex items-center justify-center font-display font-bold text-sm">
+      {initialLetter}
+    </div>
+  )}
+</div>

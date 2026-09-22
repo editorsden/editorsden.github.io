@@ -1,0 +1,133 @@
+name: "Submit a Tool for Editors Den"
+description: "Submit a new post-production plugin, extension, or utility to the archive"
+title: "[Tool Submission]: "
+labels: ["tool-submission", "review-needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for submitting a tool to **Editors Den**! Please provide accurate details so the community can discover and benefit from this software.
+
+  - type: input
+    id: title
+    attributes:
+      label: Software / Plugin Title
+      placeholder: e.g. Autokroma Influx
+    validations:
+      required: true
+
+  - type: input
+    id: tagline
+    attributes:
+      label: One-Sentence Pitch (Tagline)
+      placeholder: e.g. Native MKV and modern codec importer for Premiere & Resolve.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Primary Category
+      options:
+        - "Format Ingestion"
+        - "Automation & AI"
+        - "Audio Repair & Cleanup"
+        - "Color Grading & VFX"
+        - "Workflow & Organization"
+        - "Subtitling & Transcription"
+        - "Export & Compression"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: nle_compatibility
+    attributes:
+      label: NLE Compatibility
+      options:
+        - label: "Premiere Pro"
+        - label: "DaVinci Resolve"
+        - label: "Final Cut Pro"
+        - label: "Avid Media Composer"
+        - label: "After Effects"
+        - label: "Universal"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: os
+    attributes:
+      label: Operating Systems
+      options:
+        - label: "macOS"
+        - label: "Windows"
+        - label: "Linux"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: pricing
+    attributes:
+      label: Pricing Model
+      options:
+        - "Free"
+        - "Open-Source"
+        - "One-Time"
+        - "Subscription"
+        - "Freemium"
+    validations:
+      required: true
+
+  - type: input
+    id: price_detail
+    attributes:
+      label: Price Details (Optional)
+      placeholder: e.g. $99 perpetual license with free trial
+
+  - type: dropdown
+    id: developer_type
+    attributes:
+      label: Developer Type
+      options:
+        - "Indie"
+        - "Studio"
+        - "Open-Source"
+    validations:
+      required: true
+
+  - type: input
+    id: website_url
+    attributes:
+      label: Official Website / Download URL
+      placeholder: https://...
+    validations:
+      required: true
+
+  - type: input
+    id: github_url
+    attributes:
+      label: GitHub Repository (if open-source)
+      placeholder: https://github.com/...
+
+  - type: textarea
+    id: bottleneck
+    attributes:
+      label: The Production Bottleneck
+      description: What exact problem or workflow delay does this solve for video editors?
+      placeholder: e.g. Premiere Pro cannot import MKV files without lengthy proxy transcoding...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: The Timeline Solution
+      description: How does this tool solve the bottleneck?
+      placeholder: e.g. A direct demuxer plugin allowing instant timeline playback...
+    validations:
+      required: true
+
+  - type: input
+    id: tags
+    attributes:
+      label: Search Tags (Comma-separated)
+      placeholder: mkv, ingest, codec, transcode

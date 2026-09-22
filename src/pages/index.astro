@@ -1,0 +1,1013 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ToolCard from "../components/ToolCard.astro";
+import TutorialCard from "../components/TutorialCard.astro";
+import FilterSidebar from "../components/FilterSidebar.astro";
+import Mascot from "../components/Mascot.astro";
+import { getCollection } from "astro:content";
+
+const allTools = await getCollection("tools");
+const allTutorials = await getCollection("tutorials");
+
+const sortedTutorials = allTutorials.sort((a, b) => {
+  const rankA = a.data.rank ?? 99;
+  const rankB = b.data.rank ?? 99;
+  if (rankA !== rankB) return rankA - rankB;
+  return a.data.title.localeCompare(b.data.title);
+});
+
+// Explicit ranking map: PC editing softwares first (by popularity), then Mobile editing apps (by popularity), then plugins & utilities
+const priorityRankMap: Record<string, number> = {
+  // 1. PC / Desktop Editing Giants (Ranked by popularity & industry usage)
+  "davinci-resolve": 1,
+  "adobe-premiere-pro": 2,
+  "final-cut-pro": 3,
+  "adobe-after-effects": 4,
+  "avid-media-composer": 5,
+  blender: 6,
+  kdenlive: 7,
+  shotcut: 8,
+
+  // 2. Mobile / Cross-Platform Editing Apps (Ranked by popularity)
+  capcut: 20,
+  "vn-video-editor": 21,
+  lumafusion: 22,
+  inshot: 23,
+  kinemaster: 24,
+  "alight-motion": 25,
+  "wondershare-filmora": 26,
+  "adobe-premiere-rush": 27,
+
+  // 3. Essential Plugins & Workflow Utilities (Ranked by popularity)
+  macwhisper: 50,
+  "firecut-ai": 51,
+  "autokroma-influx": 52,
+  excalibur: 53,
+  handbrake: 54,
+  losslesscut: 55,
+  "composite-brush": 56,
+  "grave-robber": 57,
+  "tentacle-sync-studio": 58,
+};
+
+function getToolRank(tool: (typeof allTools)[0]) {
+  if (tool.id in priorityRankMap) return priorityRankMap[tool.id];
+  return tool.data.rank ?? 99;
+}
+
+const sortedTools = allTools.sort((a, b) => {
+  return getToolRank(a) - getToolRank(b);
+});
+---
+
+<BaseLayout
+  title="Editors Den — The Editors Archive"
+  description="Curated software, plugins, tutorials, and hidden gems for video editors, colorists, and post-production professionals."
+>
+  <!-- Main Panoramic Horizon Hero (Generous Negative Space) -->
+  <section
+    class="relative z-10 flex flex-col items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 md:pt-24 lg:pt-28 pb-10 md:pb-14"
+  >
+    <div
+      class="w-full max-w-4xl mx-auto flex flex-col items-center text-center"
+    >
+      <!-- Aperture Radar Chamber / Mascot Stage -->
+      <Mascot />
+
+      <!-- Ultra-wide Letterspaced Display Heading -->
+      <div class="relative mt-2">
+        <h1
+          class="font-display font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight text-slate-900 leading-none"
+        >
+          Editors Den
+        </h1>
+        <!-- Subtle under-glow -->
+        <div
+          class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-48 h-4 bg-cyan-500/15 blur-lg rounded-full pointer-events-none"
+        >
+        </div>
+      </div>
+
+      <!-- Secondary Text Subtitle -->
+      <p
+        class="font-sans text-base sm:text-lg md:text-xl text-slate-600 font-normal tracking-wide mt-4 max-w-md"
+      >
+        The editors archive.
+      </p>
+      <p class="inline-flex items-center gap-1.5 font-sans text-[11px] text-slate-200 tracking-wide mt-5 px-4 py-1.5 rounded-full bg-slate-800 border border-slate-700">
+        Made with Love <span class="text-red-400">❤️</span> By Prince Yadav
+      </p>
+
+      <!-- The Five Quick Filter Buttons on Landing Page (Requested by User) -->
+      <div
+        class="flex items-center justify-center gap-2 sm:gap-2.5 flex-wrap mt-10"
+        id="hero-type-tabs"
+      >
+        <button
+          type="button"
+          data-tab-type=""
+          class="type-tab-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer bg-slate-900 text-white border border-slate-800 shadow-sm font-sans"
+        >
+          All Tools
+        </button>
+        <button
+          type="button"
+          data-tab-type="software"
+          class="type-tab-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer bg-white/80 hover:bg-white text-slate-700 hover:text-cyan-800 border border-cyan-500/20 hover:border-cyan-400/50 shadow-xs font-sans"
+        >
+          Editing Softwares
+        </button>
+        <button
+          type="button"
+          data-tab-type="gems"
+          class="type-tab-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer bg-white/80 hover:bg-white text-slate-700 hover:text-cyan-800 border border-cyan-500/20 hover:border-cyan-400/50 shadow-xs flex items-center gap-1.5 sm:gap-2 font-sans"
+        >
+          <span>Must Have Utilities</span>
+          <span
+            class="gems-star w-4 h-4 rounded-full bg-amber-50 border border-amber-300/80 text-amber-600 text-[10px] flex items-center justify-center font-bold"
+            >★</span
+          >
+        </button>
+        <button
+          type="button"
+          data-tab-type="plugin"
+          class="type-tab-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer bg-white/80 hover:bg-white text-slate-700 hover:text-cyan-800 border border-cyan-500/20 hover:border-cyan-400/50 shadow-xs font-sans"
+        >
+          Plugins
+        </button>
+        <button
+          type="button"
+          data-tab-type="tutorial"
+          class="type-tab-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer bg-white/80 hover:bg-white text-slate-700 hover:text-cyan-800 border border-cyan-500/20 hover:border-cyan-400/50 shadow-xs flex items-center gap-1.5 font-sans"
+        >
+          <span>Learning</span>
+          <span
+            class="tutorial-guide-badge text-[11px] font-mono text-cyan-600/70"
+            >Guides</span
+          >
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Curated Tool Directory & Filter Stage -->
+  <section
+    id="directory"
+    class="relative z-10 max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pb-28 pt-4"
+  >
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
+      <!-- Left Sticky Sidebar (Stays fixed as people scroll!) -->
+      <aside
+        class="w-full lg:w-72 xl:w-80 shrink-0 lg:sticky lg:top-24 self-start"
+      >
+        <FilterSidebar />
+      </aside>
+
+      <!-- Right Main Directory Content -->
+      <main class="flex-1 min-w-0 w-full">
+        <!-- Directory Header Row (Title, Subtitle, Match Count) -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-6 border-b border-slate-200/80"
+        >
+          <div>
+            <h2
+              id="active-view-heading"
+              class="text-xl sm:text-2xl font-bold text-slate-900 font-display tracking-tight"
+            >
+              All Softwares & Tools
+            </h2>
+            <p
+              id="active-view-subheading"
+              class="text-xs text-slate-500 font-sans mt-0.5"
+            >
+              The definitive archive of video editing suites, workflow plugins,
+              and tutorials.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3 shrink-0">
+            <span
+              id="filter-match-count"
+              class="text-xs font-mono text-cyan-800 bg-cyan-50/90 border border-cyan-200/80 px-3 py-1 rounded-full font-medium"
+            >
+              39 tools
+            </span>
+          </div>
+        </div>
+
+        <!-- Learning Sub-Filter Bar (Active when Learning view is selected) -->
+        <div
+          id="learning-niche-bar"
+          class="hidden items-center gap-1.5 sm:gap-2 flex-wrap pb-4 mb-5 border-b border-slate-200/60"
+        >
+          <button
+            type="button"
+            data-niche=""
+            class="niche-tab-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 text-white shadow-2xs transition-all cursor-pointer font-sans"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            data-niche="Premiere Pro"
+            class="niche-tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100/90 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/80 transition-all cursor-pointer font-sans"
+          >
+            Premiere Pro
+          </button>
+          <button
+            type="button"
+            data-niche="After Effects"
+            class="niche-tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100/90 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/80 transition-all cursor-pointer font-sans"
+          >
+            After Effects
+          </button>
+          <button
+            type="button"
+            data-niche="Motion Design"
+            class="niche-tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100/90 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/80 transition-all cursor-pointer font-sans"
+          >
+            Motion Design
+          </button>
+          <button
+            type="button"
+            data-niche="Filmmaking"
+            class="niche-tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100/90 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/80 transition-all cursor-pointer font-sans"
+          >
+            Filmmaking
+          </button>
+          <button
+            type="button"
+            data-niche="Music"
+            class="niche-tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100/90 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/80 transition-all cursor-pointer font-sans"
+          >
+            Music
+          </button>
+          <button
+            type="button"
+            data-niche="VFX"
+            class="niche-tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100/90 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/80 transition-all cursor-pointer font-sans"
+          >
+            VFX
+          </button>
+          <button
+            type="button"
+            data-niche="3D"
+            class="niche-tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100/90 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/80 transition-all cursor-pointer font-sans"
+          >
+            3D
+          </button>
+        </div>
+
+        <!-- Cards / List Container -->
+        <div
+          id="tools-cards-grid"
+          class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6"
+        >
+          {sortedTools.map((tool) => <ToolCard tool={tool} />)}
+          {sortedTutorials.map((tut) => <TutorialCard tutorial={tut} />)}
+        </div>
+
+        <!-- Empty State -->
+        <div
+          id="no-tools-found"
+          class="hidden py-16 text-center rounded-[28px] bg-white/90 backdrop-blur-sm border border-slate-200/80 p-8 space-y-3 shadow-sm mt-6"
+        >
+          <div class="space-y-1">
+            <h3 class="text-sm font-semibold text-slate-900 font-display">
+              No tools found matching your filters
+            </h3>
+            <p class="text-xs text-slate-500 font-sans">
+              Try clearing your filters or search by keyword.
+            </p>
+          </div>
+          <button
+            id="empty-clear-btn"
+            type="button"
+            class="px-5 py-2 text-xs font-medium text-white bg-slate-900 hover:bg-cyan-600 rounded-full transition-colors cursor-pointer shadow-xs"
+          >
+            Clear Filters
+          </button>
+        </div>
+      </main>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { isHomePath } from "../lib/path";
+
+  interface FilterState {
+    tab: string;
+    query: string;
+    category: string;
+    nle: string;
+    os: string;
+    pricing: string;
+  }
+
+  const state: FilterState = {
+    tab: "",
+    query: "",
+    category: "",
+    nle: "",
+    os: "",
+    pricing: "",
+  };
+
+  const cards = document.querySelectorAll<HTMLElement>("[data-tool-card]");
+  const searchInput = document.getElementById(
+    "filter-search-input",
+  ) as HTMLInputElement | null;
+  const categorySelect = document.getElementById(
+    "filter-category-select",
+  ) as HTMLSelectElement | null;
+  const osSelect = document.getElementById(
+    "filter-os-select",
+  ) as HTMLSelectElement | null;
+  const pricingSelect = document.getElementById(
+    "filter-pricing-select",
+  ) as HTMLSelectElement | null;
+  const clearBtn = document.getElementById("clear-filters-btn");
+  const emptyClearBtn = document.getElementById("empty-clear-btn");
+  const matchCount = document.getElementById("filter-match-count");
+  const cardsGrid = document.getElementById("tools-cards-grid");
+  const noFoundBox = document.getElementById("no-tools-found");
+  const nlePills = document.querySelectorAll<HTMLButtonElement>(".nle-pill");
+  const tabBtns = document.querySelectorAll<HTMLButtonElement>(".type-tab-btn");
+
+  function applyFilters() {
+    let visibleCount = 0;
+    const q = state.query.toLowerCase().trim();
+
+    cards.forEach((card) => {
+      const title = card.getAttribute("data-title") || "";
+      const category = card.getAttribute("data-category") || "";
+      const categoriesList: string[] = JSON.parse(
+        card.getAttribute("data-categories") || "[]",
+      );
+      const nleList: string[] = JSON.parse(
+        card.getAttribute("data-nle") || "[]",
+      );
+      const osList: string[] = JSON.parse(card.getAttribute("data-os") || "[]");
+      const pricing = card.getAttribute("data-pricing") || "";
+      const bottleneck = card.getAttribute("data-bottleneck") || "";
+      const solution = card.getAttribute("data-solution") || "";
+      const tags: string[] = JSON.parse(card.getAttribute("data-tags") || "[]");
+      const itemType = card.getAttribute("data-type") || "";
+      const isGem = card.getAttribute("data-gem") === "true";
+
+      // 1. Tab filter
+      let matchTab = true;
+      if (state.tab === "software") {
+        matchTab = itemType === "software";
+      } else if (state.tab === "plugin") {
+        matchTab = itemType === "plugin";
+      } else if (state.tab === "tutorial" || state.tab === "tutorials") {
+        matchTab = itemType === "tutorial";
+      } else if (state.tab === "gems") {
+        matchTab = isGem && itemType !== "software" && itemType !== "tutorial";
+      } else if (state.tab === "") {
+        matchTab = q ? true : itemType !== "tutorial";
+      }
+
+      // 2. Text search
+      let matchQuery = true;
+      if (q) {
+        const gemAlias = isGem ? "must have recommended gem essential" : "";
+        const typeAliases =
+          (itemType === "software"
+            ? "editing software suite nle"
+            : itemType === "utility"
+              ? "utility app helper tool"
+              : itemType === "plugin"
+                ? "plugin extension"
+                : "guide tutorial creator channel youtube course masterclass school essay") +
+          " " +
+          gemAlias;
+        matchQuery =
+          title.includes(q) ||
+          bottleneck.includes(q) ||
+          solution.includes(q) ||
+          tags.some((t) => t.toLowerCase().includes(q)) ||
+          category.toLowerCase().includes(q) ||
+          categoriesList.some((c) => c.toLowerCase().includes(q)) ||
+          typeAliases.includes(q);
+      }
+
+      // 3. Category filter
+      let matchCategory = true;
+      if (state.category) {
+        if (itemType === "tutorial") {
+          matchCategory =
+            categoriesList.includes(state.category) ||
+            category === state.category;
+        } else {
+          matchCategory = category === state.category;
+        }
+      }
+
+      // 4. NLE filter
+      let matchNLE = true;
+      if (state.nle) {
+        matchNLE = nleList.includes(state.nle) || nleList.includes("Universal");
+      }
+
+      // 5. OS filter
+      let matchOS = true;
+      if (state.os) {
+        if (state.os === "Mobile") {
+          matchOS = osList.some((o) =>
+            ["iOS", "Android", "iPadOS"].includes(o),
+          );
+        } else if (state.os === "PC") {
+          matchOS = osList.some((o) =>
+            ["macOS", "Windows", "Linux"].includes(o),
+          );
+        } else {
+          matchOS = osList.includes(state.os);
+        }
+      }
+
+      // 6. Pricing filter
+      let matchPricing = true;
+      if (state.pricing) {
+        if (state.pricing === "Free") {
+          matchPricing = pricing === "Free" || pricing === "Open-Source";
+        } else {
+          matchPricing = pricing === state.pricing;
+        }
+      }
+
+      const isMatch =
+        matchTab &&
+        matchQuery &&
+        matchCategory &&
+        matchNLE &&
+        matchOS &&
+        matchPricing;
+
+      if (isMatch) {
+        card.style.display = "flex";
+        visibleCount++;
+      } else {
+        card.style.display = "none";
+      }
+    });
+
+    if (matchCount) {
+      const isTut = state.tab === "tutorial" || state.tab === "tutorials";
+      matchCount.textContent = `${visibleCount} ${isTut ? "creators & courses" : "tools"}`;
+    }
+
+    if (cardsGrid && noFoundBox) {
+      if (visibleCount === 0) {
+        cardsGrid.classList.add("hidden");
+        noFoundBox.classList.remove("hidden");
+      } else {
+        cardsGrid.classList.remove("hidden");
+        noFoundBox.classList.add("hidden");
+      }
+    }
+
+    const hasFilters = !!(
+      state.tab ||
+      state.query ||
+      state.category ||
+      state.nle ||
+      state.os ||
+      state.pricing
+    );
+    if (clearBtn) {
+      if (hasFilters) {
+        clearBtn.classList.remove("hidden");
+        clearBtn.classList.add("inline-flex");
+      } else {
+        clearBtn.classList.add("hidden");
+        clearBtn.classList.remove("inline-flex");
+      }
+    }
+
+    // Toggle Learning Niche sub-filter bar
+    const learningNicheBar = document.getElementById("learning-niche-bar");
+    const isTutorialTab = state.tab === "tutorial" || state.tab === "tutorials";
+    if (learningNicheBar) {
+      if (isTutorialTab) {
+        learningNicheBar.classList.remove("hidden");
+        learningNicheBar.classList.add("flex");
+      } else {
+        learningNicheBar.classList.add("hidden");
+        learningNicheBar.classList.remove("flex");
+      }
+    }
+
+    // Sync Niche buttons active styles
+    document
+      .querySelectorAll<HTMLButtonElement>(".niche-tab-btn")
+      .forEach((btn) => {
+        const niche = btn.getAttribute("data-niche") || "";
+        const isSelected = niche === state.category;
+        if (isSelected) {
+          btn.className =
+            "niche-tab-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-900 text-white shadow-2xs transition-all cursor-pointer font-sans";
+        } else {
+          btn.className =
+            "niche-tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100/90 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/80 transition-all cursor-pointer font-sans";
+        }
+      });
+
+    // Dynamic heading & description updates
+    const viewHeading = document.getElementById("active-view-heading");
+    const viewSubheading = document.getElementById("active-view-subheading");
+    if (viewHeading && viewSubheading) {
+      switch (state.tab) {
+        case "software":
+          viewHeading.textContent = "Editing Softwares & Suites";
+          viewSubheading.textContent =
+            "Industry-leading video editors and suites for desktop, workstation, and mobile.";
+          break;
+        case "plugin":
+          viewHeading.textContent = "Plugins & Timeline Extensions";
+          viewSubheading.textContent =
+            "Essential tools, scripts, and utilities to automate your post-production pipeline.";
+          break;
+        case "tutorial":
+        case "tutorials":
+          viewHeading.textContent = "Learning & Creator Archive";
+          viewSubheading.textContent =
+            "Curated masterclass creators, channels, and courses across Premiere Pro, After Effects, Motion Design, Filmmaking, Music, VFX, and 3D.";
+          break;
+        case "gems":
+          viewHeading.textContent = "Must-Have Utilities & Tools";
+          viewSubheading.textContent =
+            "Essential workflow utilities, power plugins, and secret weapons every editor needs.";
+          break;
+        default:
+          viewHeading.textContent = "All Softwares & Tools";
+          viewSubheading.textContent =
+            "The definitive archive of video editing suites, workflow plugins, and tutorials.";
+          break;
+      }
+    }
+
+    // Contextual Sidebar Panel Visibility
+    const contextOS = document.getElementById("sidebar-context-os");
+    const contextNLE = document.getElementById("sidebar-context-nle");
+    const contextLearning = document.getElementById("sidebar-context-learning");
+    const contextCategory = document.getElementById("sidebar-context-category");
+    const contextPricing = document.getElementById("sidebar-context-pricing");
+
+    if (isTutorialTab) {
+      if (contextLearning) contextLearning.classList.remove("hidden");
+      if (contextNLE) contextNLE.classList.add("hidden");
+      if (contextCategory) contextCategory.classList.add("hidden");
+      if (contextPricing) contextPricing.classList.add("hidden");
+      if (contextOS) contextOS.classList.add("hidden");
+    } else if (state.tab === "software") {
+      if (contextLearning) contextLearning.classList.add("hidden");
+      if (contextNLE) contextNLE.classList.add("hidden");
+      if (contextCategory) contextCategory.classList.remove("hidden");
+      if (contextPricing) contextPricing.classList.remove("hidden");
+      if (contextOS) contextOS.classList.remove("hidden");
+    } else if (state.tab === "gems") {
+      if (contextLearning) contextLearning.classList.add("hidden");
+      if (contextNLE) contextNLE.classList.add("hidden");
+      if (contextCategory) contextCategory.classList.remove("hidden");
+      if (contextPricing) contextPricing.classList.remove("hidden");
+      if (contextOS) contextOS.classList.remove("hidden");
+    } else if (state.tab === "plugin") {
+      if (contextLearning) contextLearning.classList.add("hidden");
+      if (contextNLE) contextNLE.classList.remove("hidden");
+      if (contextCategory) contextCategory.classList.remove("hidden");
+      if (contextPricing) contextPricing.classList.remove("hidden");
+      if (contextOS) contextOS.classList.remove("hidden");
+    } else {
+      if (contextLearning) contextLearning.classList.add("hidden");
+      if (contextNLE) contextNLE.classList.remove("hidden");
+      if (contextCategory) contextCategory.classList.remove("hidden");
+      if (contextPricing) contextPricing.classList.remove("hidden");
+      if (contextOS) contextOS.classList.remove("hidden");
+    }
+
+    // Sync OS pills active state
+    document.querySelectorAll<HTMLButtonElement>(".os-pill").forEach((btn) => {
+      const osVal = btn.getAttribute("data-filter-os") || "";
+      const isSelected = osVal === state.os;
+      const isColSpan = btn.classList.contains("col-span-2");
+      if (isSelected) {
+        btn.className = `os-pill ${isColSpan ? "col-span-2" : ""} py-1.5 px-2.5 rounded-xl text-xs font-medium bg-slate-900 text-white flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs font-sans`;
+      } else {
+        btn.className = `os-pill ${isColSpan ? "col-span-2" : ""} py-1.5 px-2.5 rounded-xl text-xs font-medium bg-slate-50 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/70 shadow-2xs flex items-center justify-center gap-1.5 transition-all cursor-pointer font-sans`;
+      }
+    });
+
+    const activeOsLabel = document.getElementById("active-os-label");
+    if (activeOsLabel) {
+      if (state.os) {
+        activeOsLabel.textContent = state.os;
+        activeOsLabel.classList.remove("hidden");
+      } else {
+        activeOsLabel.classList.add("hidden");
+      }
+    }
+
+    // Sync Sidebar Learning pills active state
+    document
+      .querySelectorAll<HTMLButtonElement>(".sidebar-niche-btn")
+      .forEach((btn) => {
+        const nicheVal = btn.getAttribute("data-niche") || "";
+        const isSelected = nicheVal === state.category;
+        if (isSelected) {
+          btn.className =
+            "sidebar-niche-btn px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer bg-slate-900 text-white font-sans shadow-2xs";
+        } else {
+          btn.className =
+            "sidebar-niche-btn px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer bg-slate-50 hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200/70 shadow-2xs font-sans";
+        }
+      });
+
+    // Update mobile tool count and active filter count badge
+    const mobileToolCount = document.getElementById("mobile-tool-count");
+    const mobileFilterBadge = document.getElementById(
+      "mobile-filter-count-badge",
+    );
+    if (mobileToolCount) {
+      const isTut = state.tab === "tutorial" || state.tab === "tutorials";
+      mobileToolCount.textContent = `${visibleCount} ${isTut ? "creators & courses" : "tools"}`;
+    }
+    let activeFilterCount = 0;
+    if (state.tab) activeFilterCount++;
+    if (state.query) activeFilterCount++;
+    if (state.category) activeFilterCount++;
+    if (state.nle) activeFilterCount++;
+    if (state.os) activeFilterCount++;
+    if (state.pricing) activeFilterCount++;
+    if (mobileFilterBadge) {
+      if (activeFilterCount > 0) {
+        mobileFilterBadge.textContent = String(activeFilterCount);
+        mobileFilterBadge.classList.remove("hidden");
+      } else {
+        mobileFilterBadge.classList.add("hidden");
+      }
+    }
+
+    // Sync quick filter buttons (Hero pills vs Sidebar list rows)
+    tabBtns.forEach((btn) => {
+      const btnTab = btn.getAttribute("data-tab-type") || "";
+      const isHero = !!btn.closest("#hero-type-tabs");
+      const star = btn.querySelector(".gems-star");
+      const guideBadge = btn.querySelector(".tutorial-guide-badge");
+      const isSelected = btnTab === state.tab;
+
+      if (isHero) {
+        if (isSelected) {
+          btn.className =
+            "type-tab-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer bg-slate-900 text-white border border-slate-800 shadow-sm flex items-center gap-1.5 sm:gap-2 font-sans";
+          if (star)
+            star.className =
+              "gems-star w-4 h-4 rounded-full bg-white text-amber-500 text-[10px] flex items-center justify-center font-bold shadow-2xs";
+          if (guideBadge)
+            guideBadge.className =
+              "tutorial-guide-badge text-[11px] font-mono text-cyan-300";
+        } else {
+          btn.className =
+            "type-tab-btn px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer bg-white/80 hover:bg-white text-slate-700 hover:text-cyan-800 border border-cyan-500/20 hover:border-cyan-400/50 shadow-xs flex items-center gap-1.5 sm:gap-2 font-sans";
+          if (star)
+            star.className =
+              "gems-star w-4 h-4 rounded-full bg-amber-50 border border-amber-300/80 text-amber-600 text-[10px] flex items-center justify-center font-bold";
+          if (guideBadge)
+            guideBadge.className =
+              "tutorial-guide-badge text-[11px] font-mono text-cyan-600/70";
+        }
+      } else {
+        // Sidebar list button
+        if (isSelected) {
+          btn.className =
+            "type-tab-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer bg-slate-900 text-white shadow-xs font-sans";
+          if (star)
+            star.className =
+              "gems-star w-4 h-4 rounded-full bg-white text-amber-500 text-[10px] flex items-center justify-center font-bold";
+          if (guideBadge)
+            guideBadge.className =
+              "tutorial-guide-badge text-[10px] font-mono text-cyan-300 font-semibold";
+        } else {
+          btn.className =
+            "type-tab-btn w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer bg-transparent hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-transparent hover:border-slate-200/60 font-sans";
+          if (star)
+            star.className =
+              "gems-star w-4 h-4 rounded-full bg-amber-50 text-amber-600 text-[10px] flex items-center justify-center font-bold";
+          if (guideBadge)
+            guideBadge.className =
+              "tutorial-guide-badge text-[10px] font-mono text-cyan-600";
+        }
+      }
+    });
+
+    // Sync topbar links active states
+    document.querySelectorAll("[data-topbar-link]").forEach((link) => {
+      const linkTab = link.getAttribute("data-topbar-link");
+      if (linkTab === state.tab) {
+        link.classList.add("text-cyan-700", "font-semibold", "bg-cyan-50/80");
+        link.classList.remove("text-slate-600");
+      } else {
+        link.classList.remove(
+          "text-cyan-700",
+          "font-semibold",
+          "bg-cyan-50/80",
+        );
+        link.classList.add("text-slate-600");
+      }
+    });
+
+    const params = new URLSearchParams();
+    if (state.tab) params.set("tab", state.tab);
+    if (state.query) params.set("q", state.query);
+    if (state.nle) params.set("nle", state.nle);
+    if (state.category) params.set("cat", state.category);
+    const newUrl = params.toString()
+      ? `?${params.toString()}`
+      : window.location.pathname;
+    window.history.replaceState({}, "", newUrl);
+  }
+
+  // Mobile Filter Drawer Toggle
+  const mobileFilterTrigger = document.getElementById("mobile-filters-trigger");
+  const filterSidebarPanel = document.getElementById("filter-sidebar-panel");
+  if (mobileFilterTrigger && filterSidebarPanel) {
+    mobileFilterTrigger.addEventListener("click", () => {
+      filterSidebarPanel.classList.toggle("hidden");
+    });
+  }
+
+  // Type tabs (Landing page hero & Sidebar)
+  tabBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const prevTab = state.tab;
+      const nextTab = btn.getAttribute("data-tab-type") || "";
+      state.tab = nextTab;
+      if (prevTab !== nextTab) {
+        state.category = "";
+        if (categorySelect) categorySelect.value = "";
+      }
+      applyFilters();
+      if (btn.closest("#hero-type-tabs")) {
+        document
+          .getElementById("directory")
+          ?.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  });
+
+  // Topbar links (if clicked while on home page)
+  document.querySelectorAll("[data-topbar-link]").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      if (isHomePath(window.location.pathname)) {
+        e.preventDefault();
+        const nextTab = link.getAttribute("data-topbar-link") || "";
+        state.tab = nextTab;
+        state.category = "";
+        if (categorySelect) categorySelect.value = "";
+        applyFilters();
+        document
+          .getElementById("directory")
+          ?.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  });
+
+  // Search input
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      state.query = (e.target as HTMLInputElement).value;
+      applyFilters();
+    });
+  }
+
+  // Category select
+  if (categorySelect) {
+    categorySelect.addEventListener("change", (e) => {
+      state.category = (e.target as HTMLSelectElement).value;
+      applyFilters();
+    });
+  }
+
+  // Learning Niche sub-filter buttons
+  document
+    .querySelectorAll<HTMLButtonElement>(".niche-tab-btn")
+    .forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.category = btn.getAttribute("data-niche") || "";
+        if (categorySelect) {
+          categorySelect.value = state.category;
+        }
+        applyFilters();
+      });
+    });
+
+  // OS select
+  if (osSelect) {
+    osSelect.addEventListener("change", (e) => {
+      state.os = (e.target as HTMLSelectElement).value;
+      applyFilters();
+    });
+  }
+
+  // Pricing select
+  if (pricingSelect) {
+    pricingSelect.addEventListener("change", (e) => {
+      state.pricing = (e.target as HTMLSelectElement).value;
+      applyFilters();
+    });
+  }
+
+  // NLE pills
+  nlePills.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const val = btn.getAttribute("data-filter-nle") || "";
+      state.nle = val;
+
+      nlePills.forEach((b) => {
+        b.className =
+          "nle-pill px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer bg-slate-50 hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200/70 shadow-2xs font-sans";
+      });
+
+      btn.className =
+        "nle-pill px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer bg-slate-900 text-white font-sans";
+      applyFilters();
+    });
+  });
+
+  // OS Pills click handlers
+  document.querySelectorAll<HTMLButtonElement>(".os-pill").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const val = btn.getAttribute("data-filter-os") || "";
+      state.os = val;
+      if (osSelect) osSelect.value = val;
+      applyFilters();
+    });
+  });
+
+  // Sidebar Learning Topics click handlers
+  document
+    .querySelectorAll<HTMLButtonElement>(".sidebar-niche-btn")
+    .forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const val = btn.getAttribute("data-niche") || "";
+        state.category = val;
+        if (categorySelect) categorySelect.value = val;
+        applyFilters();
+      });
+    });
+
+  function resetFilters() {
+    state.tab = "";
+    state.query = "";
+    state.category = "";
+    state.nle = "";
+    state.os = "";
+    state.pricing = "";
+
+    if (searchInput) searchInput.value = "";
+    if (categorySelect) categorySelect.value = "";
+    if (osSelect) osSelect.value = "";
+    if (pricingSelect) pricingSelect.value = "";
+
+    nlePills.forEach((b, idx) => {
+      if (idx === 0) {
+        b.className =
+          "nle-pill px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer bg-slate-900 text-white font-sans";
+      } else {
+        b.className =
+          "nle-pill px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer bg-slate-50 hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200/70 shadow-2xs font-sans";
+      }
+    });
+
+    document
+      .querySelectorAll<HTMLButtonElement>(".os-pill")
+      .forEach((b, idx) => {
+        const isColSpan = b.classList.contains("col-span-2");
+        if (idx === 0) {
+          b.className = `os-pill ${isColSpan ? "col-span-2" : ""} py-1.5 px-2.5 rounded-xl text-xs font-medium bg-slate-900 text-white flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs font-sans`;
+        } else {
+          b.className = `os-pill ${isColSpan ? "col-span-2" : ""} py-1.5 px-2.5 rounded-xl text-xs font-medium bg-slate-50 hover:bg-white text-slate-700 hover:text-slate-900 border border-slate-200/70 shadow-2xs flex items-center justify-center gap-1.5 transition-all cursor-pointer font-sans`;
+        }
+      });
+
+    applyFilters();
+  }
+
+  if (clearBtn) clearBtn.addEventListener("click", resetFilters);
+  if (emptyClearBtn) emptyClearBtn.addEventListener("click", resetFilters);
+
+  // Restore from URL on load
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("tab")) {
+    state.tab = urlParams.get("tab") || "";
+  }
+  if (urlParams.get("q")) {
+    state.query = urlParams.get("q") || "";
+    if (searchInput) searchInput.value = state.query;
+  }
+  if (urlParams.get("os")) {
+    state.os = urlParams.get("os") || "";
+    if (osSelect) osSelect.value = state.os;
+  }
+  if (urlParams.get("nle")) {
+    const nleVal = urlParams.get("nle");
+    const nleBtn = document.querySelector(`[data-filter-nle="${nleVal}"]`);
+    if (nleBtn) (nleBtn as HTMLButtonElement).click();
+  }
+
+  // View mode toggle (Card Grid vs List Mode)
+  const gridViewBtn = document.getElementById("view-mode-grid");
+  const listViewBtn = document.getElementById("view-mode-list");
+
+  function setViewMode(mode: "grid" | "list") {
+    if (!cardsGrid) return;
+    cardsGrid.setAttribute("data-view", mode);
+    try {
+      localStorage.setItem("editors-den-view-mode", mode);
+    } catch (_) {}
+
+    if (mode === "list") {
+      gridViewBtn?.classList.remove("bg-slate-900", "text-white", "shadow-xs");
+      gridViewBtn?.classList.add("text-slate-500", "hover:text-slate-900");
+
+      listViewBtn?.classList.add("bg-slate-900", "text-white", "shadow-xs");
+      listViewBtn?.classList.remove("text-slate-500", "hover:text-slate-900");
+    } else {
+      listViewBtn?.classList.remove("bg-slate-900", "text-white", "shadow-xs");
+      listViewBtn?.classList.add("text-slate-500", "hover:text-slate-900");
+
+      gridViewBtn?.classList.add("bg-slate-900", "text-white", "shadow-xs");
+      gridViewBtn?.classList.remove("text-slate-500", "hover:text-slate-900");
+    }
+  }
+
+  gridViewBtn?.addEventListener("click", () => setViewMode("grid"));
+  listViewBtn?.addEventListener("click", () => setViewMode("list"));
+
+  // Restore saved view mode preference
+  let initialMode: "grid" | "list" = "grid";
+  try {
+    const saved = localStorage.getItem("editors-den-view-mode");
+    if (saved === "list" || saved === "grid") {
+      initialMode = saved;
+    }
+  } catch (_) {}
+  setViewMode(initialMode);
+
+  // Keyboard shortcut: press '/' to quickly focus the filter search input
+  document.addEventListener("keydown", (e) => {
+    if (
+      e.key === "/" &&
+      document.activeElement !== searchInput &&
+      document.activeElement?.tagName !== "INPUT" &&
+      document.activeElement?.tagName !== "TEXTAREA"
+    ) {
+      e.preventDefault();
+      searchInput?.focus();
+      searchInput?.select();
+    }
+  });
+
+  applyFilters();
+</script>
+
+<style is:global>
+  /* List Mode Dynamic Layout */
+  #tools-cards-grid[data-view="list"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  #tools-cards-grid[data-view="list"] .tool-card-item {
+    padding: 0.875rem 1.5rem !important;
+    border-radius: 20px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+  #tools-cards-grid[data-view="list"] .card-view-mode {
+    display: none !important;
+  }
+
+  #tools-cards-grid[data-view="list"] .list-view-mode {
+    display: flex !important;
+  }
+
+  /* Thin scrollbar for sticky filter sidebar */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.35);
+    border-radius: 9999px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 0.6);
+  }
+</style>

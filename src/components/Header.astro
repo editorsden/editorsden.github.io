@@ -1,0 +1,83 @@
+---
+import { Search, Plus } from '@lucide/astro';
+import { withBase } from '../lib/path';
+---
+
+<header class="sticky top-4 sm:top-6 z-40 w-full px-4 sm:px-6 flex justify-center pointer-events-none mb-2 sm:mb-4">
+  <!-- Frosted Glass Floating Capsule -->
+  <div class="w-full max-w-5xl bg-white/85 backdrop-blur-xl border border-cyan-500/25 rounded-2xl px-5 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between shadow-[0_8px_32px_rgba(14,165,233,0.08)] pointer-events-auto">
+    <!-- Brand: Clean Editors Den Text Only -->
+    <a href={withBase('/')} class="font-display font-bold text-base sm:text-lg tracking-tight text-slate-900 hover:text-cyan-700 transition-colors">
+      Editors Den
+    </a>
+
+    <!-- Middle Meaningful Navigation Links -->
+    <nav class="hidden md:flex items-center gap-1 text-xs text-slate-600 font-medium">
+      <a 
+        href={withBase('?tab=software')} 
+        data-topbar-link="software" 
+        class="px-3 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100/80 transition-colors font-sans"
+      >
+        Editing Softwares
+      </a>
+      <a 
+        href={withBase('?tab=gems')} 
+        data-topbar-link="gems" 
+        class="px-3 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100/80 transition-colors font-sans"
+      >
+        Must Have Utilities
+      </a>
+      <a 
+        href={withBase('?tab=plugin')} 
+        data-topbar-link="plugin" 
+        class="px-3 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100/80 transition-colors font-sans"
+      >
+        Plugins
+      </a>
+      <a 
+        href={withBase('?tab=tutorial')} 
+        data-topbar-link="tutorial" 
+        class="px-3 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100/80 transition-colors font-sans"
+      >
+        Learning
+      </a>
+      <a 
+        href={withBase('/dev-hub')} 
+        class="px-3 py-1.5 rounded-full hover:text-slate-900 hover:bg-slate-100/80 transition-colors font-sans flex items-center gap-1.5"
+      >
+        <span>Dev Hub</span>
+        <span class="text-[9px] font-mono text-cyan-700 font-semibold bg-cyan-50 border border-cyan-200/80 px-1.5 py-0.2 rounded-full">
+          Scripts
+        </span>
+      </a>
+    </nav>
+
+    <!-- Right Actions: Search Bar & Plus Icon -->
+    <div class="flex items-center gap-2.5 sm:gap-3">
+      <!-- Search Bar -->
+      <button
+        id="search-palette-trigger"
+        type="button"
+        class="flex items-center gap-2 px-3.5 py-1.5 text-xs text-slate-500 hover:text-cyan-800 bg-white/90 hover:bg-white border border-cyan-500/20 hover:border-cyan-400/40 rounded-full transition-all cursor-pointer shadow-xs"
+        aria-label="Search tools (Cmd + K)"
+      >
+        <Search class="w-3.5 h-3.5 text-cyan-500" />
+        <span class="text-xs font-sans">Search archive...</span>
+        <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.2 text-[10px] font-mono text-cyan-700 bg-cyan-50/80 border border-cyan-200/80 rounded-full">
+          ⌘K
+        </kbd>
+      </button>
+
+      <!-- Plus Icon Button -->
+      <button
+        id="open-submit-modal-btn"
+        type="button"
+        class="w-8 h-8 flex items-center justify-center rounded-full text-white bg-slate-900 hover:bg-cyan-600 transition-colors cursor-pointer shadow-xs shrink-0"
+        title="Submit a Tool"
+        aria-label="Submit a Tool"
+      >
+        <Plus class="w-4 h-4 text-white" />
+      </button>
+    </div>
+  </div>
+</header>

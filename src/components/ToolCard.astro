@@ -1,0 +1,314 @@
+---
+import SoftwareLogo from './SoftwareLogo.astro';
+import PlatformIcons from './PlatformIcons.astro';
+import { withBase } from '../lib/path';
+
+interface Props {
+  tool: {
+    id: string;
+    data: {
+      title: string;
+      tagline: string;
+      type: string;
+      category: string;
+      nle_compatibility: string[];
+      os: string[];
+      pricing: string;
+      price_detail?: string;
+      developer_type: string;
+      website_url: string;
+      icon: string;
+      featured?: boolean;
+      hidden_gem?: boolean;
+      bottleneck: string;
+      solution: string;
+      tags: string[];
+    };
+  };
+}
+
+const { tool } = Astro.props;
+const { data, id } = tool;
+
+const isFreeOrFreemium = ['Free', 'Freemium', 'Open-Source'].includes(data.pricing);
+
+// Extract clean hostname for website link
+let cleanDomain = '';
+try {
+  const urlObj = new URL(data.website_url);
+  cleanDomain = urlObj.hostname.replace(/^www\./, '');
+} catch {
+  cleanDomain = data.website_url;
+}
+
+const isMobile = data.os.some((o) => ['iOS', 'Android', 'iPadOS'].includes(o));
+const isDesktop = data.os.some((o) => ['macOS', 'Windows', 'Linux'].includes(o));
+
+// Filter out raw 'Universal' tag from UI badges
+const visibleHosts = (data.nle_compatibility || []).filter(
+  (n) => n.toLowerCase() !== 'universal'
+);
+
+// 1. Primary Color-Coded Type Badge Configuration
+let typeLabel = 'Editing Software';
+let typeBadgeClasses = 'bg-indigo-50 text-indigo-700 border-indigo-200/80';
+let typeDotColor = 'bg-indigo-500';
+
+if (data.type === 'plugin') {
+  typeLabel = 'Plugin';
+  typeBadgeClasses = 'bg-emerald-50 text-emerald-700 border-emerald-200/80';
+  typeDotColor = 'bg-emerald-500';
+} else if (data.type === 'utility') {
+  typeLabel = 'Utility App';
+  typeBadgeClasses = 'bg-sky-50 text-sky-700 border-sky-200/80';
+  typeDotColor = 'bg-sky-500';
+} else {
+  typeLabel = 'Editing Software';
+  typeBadgeClasses = 'bg-indigo-50 text-indigo-700 border-indigo-200/80';
+  typeDotColor = 'bg-indigo-500';
+}
+
+// 2. Secondary Context Badge (Cross-Platform, Mobile Editor, or Host Software)
+let secondaryBadge = '';
+if (data.type === 'software') {
+  if (isMobile && isDesktop) {
+    secondaryBadge = 'Cross-Platform';
+  } else if (isMobile) {
+    secondaryBadge = 'Mobile Editor';
+  }
+} else if (data.type === 'plugin' && visibleHosts.length > 0) {
+  secondaryBadge = `for ${visibleHosts[0]}`;
+}
+
+// 3. Standout Feature Tag Mapping
+const tagDisplayMap: Record<string, string> = {
+  'auto-captions': 'Auto Captions',
+  'ai-editing': 'AI Features',
+  'speed-curve': 'Speed Curves',
+  'magnetic-timeline': 'Magnetic Timeline',
+  'color-grading': 'Color Grading',
+  'fairlight': 'Fairlight Audio',
+  'vfx': 'VFX & Motion',
+  'multicam': 'Multi-Cam',
+  'multi-track': 'Multi-Track',
+  'subtitles': 'Subtitles',
+  'lossless': 'Lossless Cut',
+  'transcoding': 'Transcoder',
+  'open-source': 'Open-Source',
+  'keyframe-animation': 'Keyframes & VFX',
+  'chroma-key': 'Chroma Key',
+  'no-watermark': 'No Watermark',
+  'av1': 'AV1 & ProRes',
+};
+
+let highlightTag = '';
+if (data.tags && Array.isArray(data.tags)) {
+  for (const t of data.tags) {
+    const key = t.toLowerCase();
+    if (tagDisplayMap[key]) {
+      highlightTag = tagDisplayMap[key];
+      break;
+    }
+  }
+  if (!highlightTag) {
+    const fallback = data.tags.find(
+      (t) => !['mobile', 'pc', 'free', 'freemium', 'paid', 'editor', 'mac', 'windows', 'desktop', 'nle'].includes(t.toLowerCase())
+    );
+    if (fallback) {
+      highlightTag = fallback.charAt(0).toUpperCase() + fallback.slice(1).replace(/-/g, ' ');
+    }
+  }
+}
+---
+
+<!-- Monolithic Card (Grid Mode) / Sleek Row (List Mode) -->
+<a 
+  href={withBase(`/tools/${id}`)}
+  class="tool-card-item group relative flex flex-col justify-between bg-white/90 backdrop-blur-md rounded-[28px] p-8 border border-slate-100 shadow-[0_10px_30px_-10px_rgba(15,23,42,0.06)] hover:shadow-[0_20px_40px_-12px_rgba(15,23,42,0.1)] transition-all duration-300"
+  data-tool-card
+  data-title={data.title.toLowerCase()}
+  data-category={data.category}
+  data-nle={JSON.stringify(data.nle_compatibility)}
+  data-os={JSON.stringify(data.os)}
+  data-pricing={data.pricing}
+  data-tags={JSON.stringify(data.tags)}
+  data-bottleneck={data.bottleneck.toLowerCase()}
+  data-solution={data.solution.toLowerCase()}
+  data-type={data.type}
+  data-gem={data.hidden_gem ? 'true' : 'false'}
+>
+  <!-- Card View Mode (Default Monolithic Float) -->
+  <div class="card-view-mode flex flex-col justify-between h-full">
+    <div>
+      <!-- Top Action & Meta -->
+      <div class="flex items-center justify-between mb-5">
+        <!-- Authentic Brand Logo -->
+        <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-xs shrink-0 flex items-center justify-center transition-transform group-hover:scale-105">
+          <SoftwareLogo id={id} name={data.title} class="w-12 h-12 rounded-2xl" />
+        </div>
+
+        <div class="flex items-center gap-2">
+          {data.hidden_gem && (
+            <span 
+              class="w-6 h-6 rounded-full bg-amber-50/95 border border-amber-300/80 flex items-center justify-center shadow-2xs shrink-0" 
+              title="Must Have (Recommended)"
+            >
+              <svg class="w-3 h-3 fill-amber-400 text-amber-500" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </span>
+          )}
+          <span class={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border font-sans ${
+            isFreeOrFreemium
+              ? 'text-emerald-700 bg-emerald-50/90 border-emerald-100/60'
+              : 'text-slate-700 bg-slate-50/90 border-slate-200/60'
+          }`}>
+            {data.pricing}
+          </span>
+          <div class="w-7 h-7 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 group-hover:bg-slate-100 transition-colors shrink-0">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Title, Category & Official Website Link -->
+      <div class="mb-3">
+        <div class="flex items-start justify-between gap-2">
+          <h3 class="text-xl font-bold text-slate-900 tracking-tight leading-snug font-display group-hover:text-cyan-700 transition-colors">
+            {data.title}
+          </h3>
+        </div>
+        
+        <div class="flex items-center gap-2 mt-1 flex-wrap">
+          <span class="text-xs font-medium text-slate-400 font-sans">
+            {data.category}
+          </span>
+          {cleanDomain && (
+            <>
+              <span class="text-slate-300 text-xs">·</span>
+              <span 
+                class="inline-flex items-center gap-1 text-[11px] font-mono text-cyan-600 hover:text-cyan-800 transition-colors font-medium cursor-pointer"
+                onclick={`event.stopPropagation(); window.open('${data.website_url}', '_blank');`}
+                title={`Visit official site: ${cleanDomain}`}
+              >
+                <span>{cleanDomain}</span>
+                <svg class="w-2.5 h-2.5 text-cyan-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"></path>
+                </svg>
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+
+      <!-- Clean Copy -->
+      <p class="text-sm text-slate-500 font-normal leading-relaxed mb-6 line-clamp-2 font-sans">
+        {data.tagline}
+      </p>
+    </div>
+
+    <!-- Bottom Row: Color-Coded Type Badge & Feature Highlights on Left, OS Icons on Bottom Right -->
+    <div class="flex items-center justify-between gap-2 pt-2">
+      <!-- Left Badges -->
+      <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+        <!-- Distinctive Color-Coded Primary Type Tag -->
+        <span class={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold border font-sans shadow-2xs ${typeBadgeClasses}`}>
+          <span class={`w-1.5 h-1.5 rounded-full ${typeDotColor}`}></span>
+          <span>{typeLabel}</span>
+        </span>
+
+        <!-- Secondary Platform Context (e.g. Cross-Platform, Mobile Editor, for Premiere Pro) -->
+        {secondaryBadge && (
+          <span class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-100/90 text-slate-700 border border-slate-200/80 font-sans">
+            {secondaryBadge}
+          </span>
+        )}
+
+        <!-- Feature Highlight Tag -->
+        {highlightTag && (
+          <span class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-50 text-slate-600 border border-slate-200/80 font-sans">
+            {highlightTag}
+          </span>
+        )}
+      </div>
+
+      <!-- Bottom Right Corner: Sleek OS Icons Dock -->
+      <PlatformIcons os={data.os} />
+    </div>
+  </div>
+
+  <!-- List View Mode (Compact Row) -->
+  <div class="list-view-mode hidden items-center justify-between gap-4 w-full">
+    <!-- Left: Brand Logo + Title + Category + Website + Tagline -->
+    <div class="flex items-center gap-3.5 min-w-0 flex-1">
+      <div class="w-9 h-9 rounded-xl overflow-hidden shadow-2xs shrink-0 flex items-center justify-center">
+        <SoftwareLogo id={id} name={data.title} class="w-9 h-9 rounded-xl" />
+      </div>
+      <div class="min-w-0 flex-1">
+        <div class="flex items-center gap-2 flex-wrap">
+          <h3 class="text-sm font-bold text-slate-900 group-hover:text-cyan-700 transition-colors font-display truncate">
+            {data.title}
+          </h3>
+          <span class="text-[11px] font-medium text-slate-400 shrink-0 font-sans">
+            · {data.category}
+          </span>
+          {cleanDomain && (
+            <span 
+              class="text-[11px] font-mono text-cyan-600 hover:text-cyan-800 shrink-0 hidden md:inline cursor-pointer"
+              onclick={`event.stopPropagation(); window.open('${data.website_url}', '_blank');`}
+              title={`Visit ${cleanDomain}`}
+            >
+              · {cleanDomain} ↗
+            </span>
+          )}
+        </div>
+        <p class="text-xs text-slate-500 truncate hidden md:block mt-0.5 font-sans">
+          {data.tagline}
+        </p>
+      </div>
+    </div>
+
+    <!-- Right: Color-Coded Type Badge, Secondary Badge, OS Icons, Pricing, Arrow -->
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+      <!-- Color-Coded Type Tag in List View -->
+      <span class={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-semibold border font-sans hidden sm:inline-flex ${typeBadgeClasses}`}>
+        <span class={`w-1.5 h-1.5 rounded-full ${typeDotColor}`}></span>
+        <span>{typeLabel}</span>
+      </span>
+
+      {secondaryBadge && (
+        <span class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200/80 font-sans hidden md:inline">
+          {secondaryBadge}
+        </span>
+      )}
+
+      <!-- OS Icons Dock in List View -->
+      <PlatformIcons os={data.os} class="hidden sm:inline-flex" />
+
+      {data.hidden_gem && (
+        <span 
+          class="w-5 h-5 rounded-full bg-amber-50/95 border border-amber-300/80 flex items-center justify-center shadow-2xs shrink-0" 
+          title="Must Have (Recommended)"
+        >
+          <svg class="w-2.5 h-2.5 fill-amber-400 text-amber-500" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        </span>
+      )}
+      <span class={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border font-sans ${
+        isFreeOrFreemium
+          ? 'text-emerald-700 bg-emerald-50/90 border-emerald-100/60'
+          : 'text-slate-700 bg-slate-50/90 border-slate-200/60'
+      }`}>
+        {data.pricing}
+      </span>
+      <div class="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 group-hover:bg-slate-100 transition-colors shrink-0">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+</a>

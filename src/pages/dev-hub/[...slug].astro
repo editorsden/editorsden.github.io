@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import { ArrowLeft, Terminal } from '@lucide/astro';
+import GithubIcon from '../../components/GithubIcon.astro';
+import { withBase } from '../../lib/path';
+
+export async function getStaticPaths() {
+  const scripts = await getCollection('devhub');
+  return scripts.map((script) => ({
+    params: { slug: script.id },
+    props: { script },
+  }));
+}
+
+const { script } = Astro.props;
+const { data, id } = script;
+const { Content } = await render(script);
+---
+
+<BaseLayout
+  title={`${data.title} — Editors Den Dev Hub`}
+  description={`${data.tagline} Bottleneck: ${data.bottleneck}`}
+  activeTab="devhub"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div>
+      <a
+        href={withBase('/dev-hub')}
+        class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-cyan-700 transition-colors"
+      >
+        <ArrowLeft class="w-3.5 h-3.5" />
+        <span>Back to Dev Hub</span>
+      </a>
+    </div>
+
+    <!-- Header Card -->
+    <div class="p-6 sm:p-8 rounded-2xl bg-white/85 backdrop-blur-md border border-cyan-500/20 shadow-[0_8px_32px_rgba(14,165,233,0.06)] space-y-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs font-mono font-medium text-slate-700 bg-slate-100/90 border border-slate-200 px-2.5 py-0.5 rounded-full">
+          {data.tool_target}
+        </span>
+        <span class="text-xs font-mono text-cyan-700 font-medium">
+          {data.language}
+        </span>
+        <span class="text-slate-300">·</span>
+        <span class="text-xs font-mono text-slate-500">
+          Difficulty: {data.difficulty}
+        </span>
+      </div>
+
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">
+        {data.title}
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
+        {data.tagline}
+      </p>
+
+      {data.github_link && (
+        <div class="pt-2">
+          <a
+            href={data.github_link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1.5 text-xs font-medium text-cyan-700 hover:text-cyan-900"
+          >
+            <GithubIcon class="w-3.5 h-3.5" />
+            <span>View Source on GitHub</span>
+          </a>
+        </div>
+      )}
+    </div>
+
+    <!-- Bottleneck vs Solution Callouts -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div class="p-6 rounded-2xl bg-rose-50/50 border border-rose-200/80 space-y-2 shadow-xs">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+          <span class="text-xs font-mono text-rose-700 font-semibold uppercase">The Bottleneck</span>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+          {data.bottleneck}
+        </p>
+      </div>
+
+      <div class="p-6 rounded-2xl bg-cyan-50/50 border border-cyan-200/80 space-y-2 shadow-xs">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+          <span class="text-xs font-mono text-cyan-700 font-semibold uppercase">The Script Solution</span>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+          {data.solution}
+        </p>
+      </div>
+    </div>
+
+    <!-- Markdown Documentation & Code Snippet -->
+    <div class="p-8 rounded-2xl bg-white/80 backdrop-blur-sm border border-cyan-500/20 shadow-xs prose max-w-none text-sm text-slate-700 leading-relaxed prose-headings:text-slate-900 prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-a:text-cyan-600 prose-pre:bg-slate-950 prose-pre:text-slate-100 prose-pre:rounded-xl prose-pre:border prose-pre:border-cyan-500/20">
+      <Content />
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+@layer base {
+  body {
+    background-color: #ffffff;
+    color: #0f172a;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Cyber-cyan technical grid for light mode */
+.bg-tech-grid {
+  background-image: 
+    linear-gradient(to right, rgba(14, 165, 233, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 165, 233, 0.07) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Radial cyan focus glows for light mode */
+.cyan-core-glow {
+  background: radial-gradient(circle at 50% 48%, rgba(14, 165, 233, 0.08) 0%, rgba(56, 189, 248, 0.02) 45%, rgba(255, 255, 255, 0) 72%);
+}
+.cyan-top-glow {
+  background: radial-gradient(ellipse at 50% 0%, rgba(14, 165, 233, 0.08) 0%, rgba(255, 255, 255, 0) 65%);
+}
+
+/* Animation keyframes */
+@keyframes pulseSlow {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.65; transform: scale(1.02); }
+}
+@keyframes floatMascot {
+  0%, 100% { transform: translateY(0px) rotate(var(--look-rot, 0deg)); }
+  50% { transform: translateY(-10px) rotate(calc(var(--look-rot, 0deg) + 0.4deg)); }
+}
+@keyframes mascotBoop {
+  0% { transform: translateY(0) rotate(var(--look-rot, 0deg)) scale(1, 1); }
+  22% { transform: translateY(10px) rotate(var(--look-rot, 0deg)) scale(1.08, 0.88); }
+  48% { transform: translateY(-16px) rotate(var(--look-rot, 0deg)) scale(0.94, 1.1); }
+  72% { transform: translateY(4px) rotate(var(--look-rot, 0deg)) scale(1.04, 0.96); }
+  100% { transform: translateY(0) rotate(var(--look-rot, 0deg)) scale(1, 1); }
+}
+@keyframes mascotWinkBounce {
+  0%, 100% { transform: translateY(0) rotate(var(--look-rot, 0deg)); }
+  40% { transform: translateY(-8px) rotate(calc(var(--look-rot, 0deg) - 4deg)); }
+}
+@keyframes earWiggleLeft {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(-22deg); }
+  60% { transform: rotate(12deg); }
+}
+@keyframes earWiggleRight {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(22deg); }
+  60% { transform: rotate(-12deg); }
+}
+@keyframes antennaPing {
+  0%, 100% { transform: scale(1); }
+  40% { transform: scale(1.45); }
+}
+@keyframes blushPop {
+  0%, 100% { opacity: 0.5; }
+  40% { opacity: 0.95; }
+}
+@keyframes floatHeart {
+  0% { opacity: 0; transform: translate(-50%, 0) scale(0.4); }
+  18% { opacity: 1; transform: translate(-50%, -12px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -88px) scale(1.15); }
+}
+@keyframes bubblePop {
+  0% { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.7); }
+  18% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.06); }
+  28% { transform: translateX(-50%) translateY(0) scale(1); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.96); }
+}
+@keyframes floatIconA {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(3deg); }
+}
+@keyframes floatIconB {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(-3deg); }
+}
+@keyframes blinkEyes {
+  0%, 92%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.1); }
+}
+.mascot-container {
+  animation: floatMascot 4.5s ease-in-out infinite;
+  transform-origin: 160px 260px;
+  --look-rot: 0deg;
+  cursor: pointer;
+}
+.mascot-container.is-booped {
+  animation: mascotBoop 0.58s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.mascot-container.is-winking {
+  animation: mascotWinkBounce 0.5s ease;
+}
+.mascot-container.is-winking .eye-left {
+  animation: none;
+  transform: scaleY(0.12);
+}
+.mascot-container.is-dizzy .ear-left {
+  transform-origin: 76px 115px;
+  animation: earWiggleLeft 0.55s ease-in-out;
+}
+.mascot-container.is-dizzy .ear-right {
+  transform-origin: 244px 115px;
+  animation: earWiggleRight 0.55s ease-in-out;
+}
+.mascot-container.is-happy .antenna-orb {
+  transform-origin: 160px 46px;
+  animation: antennaPing 0.55s ease;
+}
+.mascot-container.is-happy .cheeks ellipse,
+.mascot-container.is-booped .cheeks ellipse {
+  animation: blushPop 0.7s ease;
+}
+.mascot-container.is-happy .smile-default,
+.mascot-container.is-booped .smile-default {
+  opacity: 0;
+}
+.mascot-container.is-happy .smile-happy,
+.mascot-container.is-booped .smile-happy {
+  opacity: 0.95;
+}
+.badge-float-1 { animation: floatIconA 5.2s ease-in-out infinite; }
+.badge-float-2 { animation: floatIconB 4.6s ease-in-out 0.6s infinite; }
+.badge-float-3 { animation: floatIconA 4.9s ease-in-out 1.2s infinite; }
+.badge-float-4 { animation: floatIconB 5.5s ease-in-out 0.3s infinite; }
+.eye {
+  animation: blinkEyes 4.2s ease-in-out infinite;
+}
+.eye-look {
+  transition: none;
+  will-change: transform;
+}
+.smile-happy {
+  opacity: 0;
+}
+.denny-heart {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  font-size: 16px;
+  pointer-events: none;
+  animation: floatHeart 0.95s ease-out forwards;
+  filter: drop-shadow(0 4px 6px rgba(244, 63, 94, 0.25));
+}
+.denny-bubble {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  transform: translateX(-50%);
+  z-index: 30;
+  pointer-events: none;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1.5px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 8px 20px -8px rgba(15, 23, 42, 0.18);
+  border-radius: 999px;
+  padding: 4px 10px;
+  opacity: 0;
+  white-space: nowrap;
+}
+.denny-bubble.is-show {
+  animation: bubblePop 1.1s ease forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-container.is-booped,
+  .mascot-container.is-winking,
+  .mascot-container.is-dizzy .ear-left,
+  .mascot-container.is-dizzy .ear-right,
+  .mascot-container.is-happy .antenna-orb,
+  .denny-heart,
+  .denny-bubble.is-show {
+    animation: none;
+  }
+}
+
+/* Crisp, subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(14, 165, 233, 0.4);
+}

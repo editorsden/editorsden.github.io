@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { Terminal, Plus, ArrowUpRight } from '@lucide/astro';
+import { withBase } from '../../lib/path';
+
+const devScripts = await getCollection('devhub');
+---
+
+<BaseLayout
+  title="Dev Hub — Editors Den"
+  description="Bespoke pipeline automation, FFmpeg transcode recipes, DaVinci Resolve Python scripts, and Adobe Premiere CEP panels."
+  activeTab="devhub"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+    <!-- Header -->
+    <div class="max-w-2xl space-y-3 pb-8 border-b border-cyan-500/20">
+      <div class="flex items-center gap-2 text-xs font-mono text-cyan-700 uppercase tracking-widest">
+        <Terminal class="w-3.5 h-3.5 text-cyan-500" />
+        <span>Bespoke Pipeline Engineering</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 font-display">
+        The Editor's Dev Hub
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+        Production-tested FFmpeg shell scripts, DaVinci Resolve Python automation, and Adobe CEP blueprints for technical video editors.
+      </p>
+
+      <div class="pt-2">
+        <a
+          href="https://github.com/editors-den/archive/issues/new?template=dev_hub_submission.yml"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-medium text-white bg-slate-900 hover:bg-cyan-600 rounded-full transition-colors shadow-xs"
+        >
+          <Plus class="w-3.5 h-3.5" />
+          <span>Submit a Script</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Scripts Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {devScripts.map((script) => (
+        <a
+          href={withBase(`/dev-hub/${script.id}`)}
+          class="p-7 rounded-2xl bg-white/85 backdrop-blur-sm hover:bg-white border border-cyan-500/15 hover:border-cyan-500/40 hover:shadow-[0_12px_32px_rgba(14,165,233,0.10)] transition-all flex flex-col justify-between group shadow-xs"
+        >
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-medium text-slate-700 bg-slate-100/90 border border-slate-200 px-2.5 py-0.5 rounded-full">
+                  {script.data.tool_target}
+                </span>
+                <span class="text-[11px] font-mono text-cyan-700/80">
+                  {script.data.language}
+                </span>
+              </div>
+              <ArrowUpRight class="w-4 h-4 text-slate-400 group-hover:text-cyan-600 transition-colors" />
+            </div>
+
+            <div>
+              <h2 class="text-base font-semibold text-slate-900 group-hover:text-cyan-700 transition-colors font-display">
+                {script.data.title}
+              </h2>
+              <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                {script.data.tagline}
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
+            <span>Difficulty: {script.data.difficulty}</span>
+            <span class="text-cyan-700/80">By {script.data.author}</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

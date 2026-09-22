@@ -1,0 +1,271 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Plus, Code, ExternalLink, ArrowLeft, Copy } from '@lucide/astro';
+import GithubIcon from '../components/GithubIcon.astro';
+import { withBase } from '../lib/path';
+
+const categories = [
+  'Format Ingestion',
+  'Automation & AI',
+  'Audio Repair & Cleanup',
+  'Color Grading & VFX',
+  'Workflow & Organization',
+  'Subtitling & Transcription',
+  'Export & Compression'
+];
+---
+
+<BaseLayout
+  title="Submit a Tool or Script — Editors Den"
+  description="Contribute a post-production plugin, workflow extension, or FFmpeg/Python script to the Editors Den archive."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+    <!-- Back to Archive Link -->
+    <div>
+      <a href={withBase('/')} class="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
+        <ArrowLeft class="w-3.5 h-3.5" />
+        <span>Back to Archive</span>
+      </a>
+    </div>
+
+    <!-- Header Banner -->
+    <div class="space-y-3 pb-8 border-b border-zinc-200">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight">
+        Add to the Editors Den Archive
+      </h1>
+
+      <p class="text-sm sm:text-base text-zinc-500 max-w-2xl leading-relaxed">
+        Whether you built an indie Premiere extension, discovered an obscure OpenFX demuxer, or crafted a life-saving FFmpeg proxy script, submit it here so thousands of editors can benefit.
+      </p>
+    </div>
+
+    <!-- Submission Options Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Option 1: GitHub Issue Template (Fast Track) -->
+      <div class="p-6 rounded-2xl bg-white border border-zinc-200 space-y-4 flex flex-col justify-between shadow-xs">
+        <div class="space-y-2">
+          <div class="flex items-center gap-2 text-zinc-900 font-semibold text-sm">
+            <GithubIcon class="w-4 h-4 text-zinc-700" />
+            <span>Fast-Track: GitHub Issue</span>
+          </div>
+          <p class="text-xs text-zinc-500 leading-relaxed">
+            Fill out our standardized GitHub Issue Form. Our maintainers will verify the software, test compatibility, and merge the entry directly into the archive repository.
+          </p>
+        </div>
+
+        <div class="pt-4 space-y-2">
+          <a
+            href="https://github.com/editors-den/archive/issues/new?template=tool_submission.yml"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-1.5 w-full px-4 py-2.5 text-xs font-medium text-white bg-black hover:bg-zinc-800 rounded-full transition-colors shadow-sm"
+          >
+            <span>Submit Tool via GitHub Form</span>
+            <ExternalLink class="w-3 h-3" />
+          </a>
+
+          <a
+            href="https://github.com/editors-den/archive/issues/new?template=dev_hub_submission.yml"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-1.5 w-full px-4 py-2 text-xs font-medium text-zinc-700 hover:text-black bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 rounded-full transition-colors"
+          >
+            <span>Submit Dev Hub Script</span>
+            <ExternalLink class="w-3 h-3" />
+          </a>
+        </div>
+      </div>
+
+      <!-- Option 2: Pull Request Method -->
+      <div class="p-6 rounded-2xl bg-white border border-zinc-200 space-y-4 flex flex-col justify-between shadow-xs">
+        <div class="space-y-2">
+          <div class="flex items-center gap-2 text-zinc-900 font-semibold text-sm">
+            <Code class="w-4 h-4 text-zinc-700" />
+            <span>Direct Pull Request</span>
+          </div>
+          <p class="text-xs text-zinc-500 leading-relaxed">
+            For developers: Fork the repository, add your Markdown file to <code class="text-zinc-900 bg-zinc-100 px-1 py-0.5 rounded">src/content/tools/</code>, and open a Pull Request.
+          </p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-zinc-900 font-mono text-[11px] text-zinc-300">
+          git checkout -b add-my-tool<br />
+          touch src/content/tools/my-tool.md<br />
+          git commit -m "feat: add my tool"<br />
+          git push origin add-my-tool
+        </div>
+      </div>
+    </div>
+
+    <!-- Frontmatter Generator -->
+    <div class="p-8 rounded-2xl bg-white border border-zinc-200 space-y-6 shadow-xs">
+      <div class="flex items-center justify-between border-b border-zinc-100 pb-4">
+        <div>
+          <h2 class="text-base font-semibold text-zinc-900">Interactive Markdown Generator</h2>
+          <p class="text-xs text-zinc-500">Generate a schema-compliant Markdown file to copy into your submission</p>
+        </div>
+        <span class="text-xs font-mono text-zinc-400">Instant Preview</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+        <div>
+          <label class="block font-mono text-zinc-600 mb-1">Software Title</label>
+          <input
+            id="page-gen-title"
+            type="text"
+            placeholder="e.g. Autokroma Influx"
+            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label class="block font-mono text-zinc-600 mb-1">Category</label>
+          <select
+            id="page-gen-category"
+            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-700 focus:outline-none cursor-pointer"
+          >
+            {categories.map((c) => <option value={c}>{c}</option>)}
+          </select>
+        </div>
+
+        <div class="sm:col-span-2">
+          <label class="block font-mono text-zinc-600 mb-1">One-Sentence Pitch (Tagline)</label>
+          <input
+            id="page-gen-tagline"
+            type="text"
+            placeholder="e.g. Native MKV and modern codec importer for Premiere & Resolve."
+            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label class="block font-mono text-zinc-600 mb-1">NLE Compatibility</label>
+          <input
+            id="page-gen-nle"
+            type="text"
+            placeholder="Premiere Pro, DaVinci Resolve"
+            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label class="block font-mono text-zinc-600 mb-1">Pricing Model</label>
+          <select
+            id="page-gen-pricing"
+            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-700 focus:outline-none cursor-pointer"
+          >
+            <option value="Free">Free</option>
+            <option value="Open-Source">Open-Source</option>
+            <option value="One-Time" selected>One-Time</option>
+            <option value="Subscription">Subscription</option>
+            <option value="Freemium">Freemium</option>
+          </select>
+        </div>
+
+        <div class="sm:col-span-2">
+          <label class="block font-mono text-zinc-600 mb-1">The Bottleneck</label>
+          <textarea
+            id="page-gen-bottleneck"
+            rows="2"
+            placeholder="What slows down the editor?"
+            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:outline-none"
+          ></textarea>
+        </div>
+
+        <div class="sm:col-span-2">
+          <label class="block font-mono text-zinc-600 mb-1">The Solution</label>
+          <textarea
+            id="page-gen-solution"
+            rows="2"
+            placeholder="How does this tool solve it on the timeline?"
+            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:outline-none"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Code Output -->
+      <div class="space-y-2 pt-4 border-t border-zinc-100">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono text-zinc-400 uppercase">Live Output</span>
+          <button
+            id="page-copy-btn"
+            type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-1 text-xs text-zinc-700 hover:text-black font-medium transition-colors cursor-pointer"
+          >
+            <Copy class="w-3.5 h-3.5" />
+            <span id="page-copy-label">Copy Code</span>
+          </button>
+        </div>
+        <pre
+          id="page-gen-preview"
+          class="p-4 rounded-xl bg-zinc-900 font-mono text-xs text-zinc-100 overflow-x-auto select-all"
+        ></pre>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  const preview = document.getElementById('page-gen-preview');
+  const copyBtn = document.getElementById('page-copy-btn');
+  const copyLabel = document.getElementById('page-copy-label');
+
+  const titleInput = document.getElementById('page-gen-title') as HTMLInputElement | null;
+  const categoryInput = document.getElementById('page-gen-category') as HTMLSelectElement | null;
+  const taglineInput = document.getElementById('page-gen-tagline') as HTMLInputElement | null;
+  const nleInput = document.getElementById('page-gen-nle') as HTMLInputElement | null;
+  const pricingInput = document.getElementById('page-gen-pricing') as HTMLSelectElement | null;
+  const bottleneckInput = document.getElementById('page-gen-bottleneck') as HTMLTextAreaElement | null;
+  const solutionInput = document.getElementById('page-gen-solution') as HTMLTextAreaElement | null;
+
+  function update() {
+    if (!preview) return;
+    const title = titleInput?.value.trim() || 'Software Name';
+    const category = categoryInput?.value.trim() || 'Format Ingestion';
+    const tagline = taglineInput?.value.trim() || 'One sentence pitch for this tool.';
+    const nleList = (nleInput?.value.trim() || 'Premiere Pro, DaVinci Resolve')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const pricing = pricingInput?.value.trim() || 'One-Time';
+    const bottleneck = bottleneckInput?.value.trim() || 'The bottleneck...';
+    const solution = solutionInput?.value.trim() || 'The solution...';
+
+    const md = `---
+title: "${title}"
+tagline: "${tagline}"
+type: "plugin"
+category: "${category}"
+nle_compatibility:
+${nleList.map((n) => `  - "${n}"`).join('\n')}
+os:
+  - "macOS"
+  - "Windows"
+pricing: "${pricing}"
+developer_type: "Indie"
+website_url: "https://example.com"
+icon: "film"
+bottleneck: "${bottleneck}"
+solution: "${solution}"
+tags:
+  - "editing"
+---`;
+    preview.textContent = md;
+  }
+
+  [titleInput, categoryInput, taglineInput, nleInput, pricingInput, bottleneckInput, solutionInput].forEach((el) => {
+    el?.addEventListener('input', update);
+  });
+
+  update();
+
+  if (copyBtn && preview && copyLabel) {
+    copyBtn.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(preview.textContent || '');
+      copyLabel.textContent = 'Copied!';
+      setTimeout(() => {
+        copyLabel.textContent = 'Copy Code';
+      }, 2000);
+    });
+  }
+</script>

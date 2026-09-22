@@ -1,0 +1,329 @@
+---
+// Clean Mascot Stage with Floating NLE Badges and Denny Mascot (No rotating background rings)
+---
+
+<div
+  id="denny-stage"
+  class="relative flex items-center justify-center select-none max-w-full scale-[0.85] xs:scale-95 sm:scale-100 transition-transform origin-center"
+  style="width: 360px; height: 330px; margin: 0 auto 0.5rem auto; touch-action: manipulation;"
+>
+  <!-- Mascot & Badge Stage (Exact 320x320 SVG Canvas) -->
+  <div class="relative select-none" style="width: 320px; height: 320px;">
+    <!-- Premiere Pro Floating Badge (Top Left) -->
+    <div
+      class="badge-float-1 absolute -top-3 -left-6 z-20 flex items-center justify-center rounded-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer select-none"
+      style="width: 52px; height: 52px; background: #00005b; border: 1.5px solid rgba(153, 153, 255, 0.4); box-shadow: 0 10px 25px -5px rgba(0, 0, 91, 0.15);"
+      title="Adobe Premiere Pro"
+    >
+      <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 19px; color: #9999ff; letter-spacing: -0.04em;">Pr</span>
+    </div>
+
+    <!-- After Effects Floating Badge (Top Right) -->
+    <div
+      class="badge-float-2 absolute top-2 -right-6 z-20 flex items-center justify-center rounded-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer select-none"
+      style="width: 52px; height: 52px; background: #00005b; border: 1.5px solid rgba(153, 153, 255, 0.4); box-shadow: 0 10px 25px -5px rgba(0, 0, 91, 0.15);"
+      title="Adobe After Effects"
+    >
+      <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 19px; color: #9999ff; letter-spacing: -0.04em;">Ae</span>
+    </div>
+
+    <!-- DaVinci Resolve Color Wheel Badge (Bottom Left) -->
+    <div
+      class="badge-float-3 absolute bottom-8 -left-8 z-20 flex items-center justify-center rounded-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer select-none"
+      style="width: 52px; height: 52px; background: #ffffff; border: 1.5px solid rgba(14, 165, 233, 0.2); box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);"
+      title="DaVinci Resolve"
+    >
+      <svg fill="none" height="28" viewBox="0 0 24 24" width="28">
+        <circle cx="12" cy="7.5" fill="#ef4444" r="3.5"></circle>
+        <circle cx="7.5" cy="15" fill="#3b82f6" r="3.5"></circle>
+        <circle cx="16.5" cy="15" fill="#10b981" r="3.5"></circle>
+      </svg>
+    </div>
+
+    <!-- Photoshop Badge (Bottom Right) -->
+    <div
+      class="badge-float-4 absolute bottom-6 -right-6 z-20 flex items-center justify-center rounded-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer select-none"
+      style="width: 52px; height: 52px; background: #001e36; border: 1.5px solid rgba(49, 168, 255, 0.4); box-shadow: 0 10px 25px -5px rgba(0, 30, 54, 0.15);"
+      title="Adobe Photoshop"
+    >
+      <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 19px; color: #31a8ff; letter-spacing: -0.04em;">Ps</span>
+    </div>
+
+    <div class="denny-bubble" id="denny-bubble" aria-hidden="true">boop!</div>
+    <div class="absolute inset-0 z-10 pointer-events-none overflow-visible" id="denny-hearts"></div>
+
+    <!-- Mascot SVG Canvas -->
+    <svg
+      height="100%"
+      viewBox="0 0 320 320"
+      width="100%"
+      xmlns="http://www.w3.org/2000/svg"
+      role="button"
+      tabindex="0"
+      aria-label="Denny the mascot. Click to say hi."
+      class="outline-none"
+    >
+      <defs>
+        <linearGradient id="bodyGrad" x1="0%" x2="100%" y1="0%" y2="100%">
+          <stop offset="0%" stop-color="#334155"></stop>
+          <stop offset="50%" stop-color="#1e293b"></stop>
+          <stop offset="100%" stop-color="#0f172a"></stop>
+        </linearGradient>
+        <linearGradient id="screenGrad" x1="0%" x2="0%" y1="0%" y2="100%">
+          <stop offset="0%" stop-color="#0f172a"></stop>
+          <stop offset="100%" stop-color="#1e293b"></stop>
+        </linearGradient>
+        <linearGradient id="cyanGlow" x1="0%" x2="100%" y1="0%" y2="100%">
+          <stop offset="0%" stop-color="#38bdf8"></stop>
+          <stop offset="100%" stop-color="#0284c7"></stop>
+        </linearGradient>
+        <filter height="140%" id="glow" width="140%" x="-20%" y="-20%">
+          <feGaussianBlur result="blur" stdDeviation="6"></feGaussianBlur>
+          <feComposite in="SourceGraphic" in2="blur" operator="over"></feComposite>
+        </filter>
+        <filter height="130%" id="softShadow" width="120%" x="-10%" y="-10%">
+          <feDropShadow dx="0" dy="16" flood-color="#0f172a" flood-opacity="0.1" stdDeviation="16"></feDropShadow>
+        </filter>
+        <clipPath id="leftEyeClip">
+          <ellipse cx="122" cy="156" rx="17" ry="23"></ellipse>
+        </clipPath>
+        <clipPath id="rightEyeClip">
+          <ellipse cx="198" cy="156" rx="17" ry="23"></ellipse>
+        </clipPath>
+      </defs>
+
+      <!-- Shadow Ground -->
+      <ellipse class="shadow-ground" cx="160" cy="290" fill="#0f172a" opacity="0.12" rx="65" ry="10"></ellipse>
+
+      <!-- Denny Animated Mascot Body -->
+      <g class="mascot-container" filter="url(#softShadow)">
+        <!-- Antenna -->
+        <g>
+          <path d="M 160 86 L 160 52" stroke="#64748b" stroke-linecap="round" stroke-width="5"></path>
+          <circle class="antenna-orb" cx="160" cy="46" fill="url(#cyanGlow)" filter="url(#glow)" r="10"></circle>
+          <circle cx="160" cy="46" fill="#e0f2fe" r="5"></circle>
+        </g>
+
+        <!-- Ear Reel Left -->
+        <g class="ear-left">
+          <circle cx="76" cy="115" fill="#334155" r="28" stroke="#475569" stroke-width="4"></circle>
+          <circle cx="76" cy="115" fill="#1e293b" r="14"></circle>
+          <circle cx="76" cy="115" fill="#38bdf8" opacity="0.9" r="5"></circle>
+          <line stroke="#475569" stroke-width="2.5" x1="76" x2="76" y1="95" y2="135"></line>
+          <line stroke="#475569" stroke-width="2.5" x1="56" x2="96" y1="115" y2="115"></line>
+        </g>
+
+        <!-- Ear Reel Right -->
+        <g class="ear-right">
+          <circle cx="244" cy="115" fill="#334155" r="28" stroke="#475569" stroke-width="4"></circle>
+          <circle cx="244" cy="115" fill="#1e293b" r="14"></circle>
+          <circle cx="244" cy="115" fill="#38bdf8" opacity="0.9" r="5"></circle>
+          <line stroke="#475569" stroke-width="2.5" x1="244" x2="244" y1="95" y2="135"></line>
+          <line stroke="#475569" stroke-width="2.5" x1="224" x2="264" y1="115" y2="115"></line>
+        </g>
+
+        <!-- Monitor Outer Body -->
+        <rect fill="url(#bodyGrad)" height="165" rx="54" stroke="#475569" stroke-width="3" width="196" x="62" y="80"></rect>
+
+        <!-- Screen Inner Body -->
+        <rect fill="url(#screenGrad)" height="136" rx="42" stroke="#334155" stroke-width="2" width="168" x="76" y="94"></rect>
+
+        <!-- Screen Glare Line -->
+        <path d="M 88 106 Q 160 88 232 106 Q 220 120 160 115 Q 100 120 88 106 Z" fill="#ffffff" opacity="0.08"></path>
+
+        <!-- Animated Blinking Eyes -->
+        <g class="eye-group">
+          <!-- Left Eye -->
+          <g class="eye eye-left" style="transform-origin: 122px 156px;">
+            <ellipse cx="122" cy="156" fill="url(#cyanGlow)" filter="url(#glow)" rx="17" ry="23"></ellipse>
+            <g class="eye-look" clip-path="url(#leftEyeClip)">
+              <ellipse cx="122" cy="160" fill="#0c4a6e" opacity="0.28" rx="9" ry="12"></ellipse>
+              <circle cx="126" cy="150" fill="#ffffff" r="6"></circle>
+              <circle cx="117" cy="162" fill="#ffffff" r="2.5"></circle>
+            </g>
+          </g>
+          <!-- Right Eye -->
+          <g class="eye eye-right" style="transform-origin: 198px 156px;">
+            <ellipse cx="198" cy="156" fill="url(#cyanGlow)" filter="url(#glow)" rx="17" ry="23"></ellipse>
+            <g class="eye-look" clip-path="url(#rightEyeClip)">
+              <ellipse cx="198" cy="160" fill="#0c4a6e" opacity="0.28" rx="9" ry="12"></ellipse>
+              <circle cx="202" cy="150" fill="#ffffff" r="6"></circle>
+              <circle cx="193" cy="162" fill="#ffffff" r="2.5"></circle>
+            </g>
+          </g>
+          <!-- Cheeks -->
+          <g class="cheeks">
+            <ellipse cx="102" cy="180" fill="#f43f5e" opacity="0.5" rx="9" ry="5"></ellipse>
+            <ellipse cx="218" cy="180" fill="#f43f5e" opacity="0.5" rx="9" ry="5"></ellipse>
+          </g>
+          <!-- Smile -->
+          <path class="smile-default" d="M 150 178 Q 160 188 170 178" fill="none" opacity="0.9" stroke="#38bdf8" stroke-linecap="round" stroke-width="3.5"></path>
+          <path class="smile-happy" d="M 144 176 Q 160 198 176 176" fill="none" stroke="#38bdf8" stroke-linecap="round" stroke-width="3.5"></path>
+        </g>
+
+        <!-- Stand and Buttons -->
+        <rect fill="#334155" height="14" rx="7" stroke="#475569" stroke-width="2" width="60" x="130" y="248"></rect>
+        <circle cx="145" cy="255" fill="#38bdf8" opacity="0.9" r="2.5"></circle>
+        <circle cx="160" cy="255" fill="#38bdf8" opacity="0.9" r="2.5"></circle>
+        <circle cx="175" cy="255" fill="#38bdf8" opacity="0.9" r="2.5"></circle>
+
+        <rect class="denny-hit" fill="transparent" height="230" rx="54" width="220" x="50" y="38"></rect>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<script>
+  const stage = document.getElementById("denny-stage");
+  const mascot = stage?.querySelector(".mascot-container") as SVGGElement | null;
+  const looks = stage ? Array.from(stage.querySelectorAll<SVGGElement>(".eye-look")) : [];
+  const heartsLayer = document.getElementById("denny-hearts");
+  const bubble = document.getElementById("denny-bubble");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (stage && mascot) {
+    const MAX = 7.5;
+    const RANGE = 240;
+    let targetX = 0;
+    let targetY = 0;
+    let curX = 0;
+    let curY = 0;
+    let raf = 0;
+    let idleTimer = 0;
+    let moodTimer = 0;
+    let lastMove = 0;
+
+    const phrases = ["boop!", "hehe", "hi!", "ready!", "♡", "cut!"];
+    const moods = ["love", "wink", "dizzy"] as const;
+
+    function applyLook() {
+      const tx = `translate(${curX.toFixed(2)}px, ${curY.toFixed(2)}px)`;
+      looks.forEach((el) => {
+        el.style.transform = tx;
+      });
+      mascot!.style.setProperty("--look-rot", `${(curX * 0.55).toFixed(2)}deg`);
+    }
+
+    function tick() {
+      curX += (targetX - curX) * 0.14;
+      curY += (targetY - curY) * 0.14;
+      applyLook();
+      if (Math.abs(targetX - curX) > 0.04 || Math.abs(targetY - curY) > 0.04) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        curX = targetX;
+        curY = targetY;
+        applyLook();
+        raf = 0;
+      }
+    }
+
+    function kick() {
+      if (!raf) raf = requestAnimationFrame(tick);
+    }
+
+    function lookAt(clientX: number, clientY: number) {
+      const rect = mascot!.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height * 0.48;
+      const nx = Math.max(-1, Math.min(1, (clientX - cx) / RANGE));
+      const ny = Math.max(-1, Math.min(1, (clientY - cy) / RANGE));
+      targetX = nx * MAX;
+      targetY = ny * MAX * 0.85;
+      lastMove = Date.now();
+      kick();
+    }
+
+    function glanceIdle() {
+      if (Date.now() - lastMove < 2200) return;
+      const angle = Math.random() * Math.PI * 2;
+      const mag = 0.35 + Math.random() * 0.65;
+      targetX = Math.cos(angle) * MAX * mag;
+      targetY = Math.sin(angle) * MAX * mag * 0.7;
+      kick();
+    }
+
+    function spawnHearts() {
+      if (!heartsLayer) return;
+      const marks = ["♥", "♡", "♥"];
+      marks.forEach((mark, i) => {
+        const heart = document.createElement("span");
+        heart.className = "denny-heart";
+        heart.textContent = mark;
+        heart.style.marginLeft = `${(i - 1) * 22 + (Math.random() * 8 - 4)}px`;
+        heart.style.animationDelay = `${i * 70}ms`;
+        heart.style.color = i === 1 ? "#fb7185" : "#f43f5e";
+        heartsLayer.appendChild(heart);
+        window.setTimeout(() => heart.remove(), 1100);
+      });
+    }
+
+    function say(text: string) {
+      if (!bubble) return;
+      bubble.textContent = text;
+      bubble.classList.remove("is-show");
+      void bubble.offsetWidth;
+      bubble.classList.add("is-show");
+      window.setTimeout(() => bubble.classList.remove("is-show"), 1100);
+    }
+
+    function clearMood() {
+      mascot!.classList.remove("is-booped", "is-winking", "is-dizzy", "is-happy");
+    }
+
+    function react() {
+      clearMood();
+      window.clearTimeout(moodTimer);
+      const mood = moods[Math.floor(Math.random() * moods.length)];
+
+      if (mood === "love") {
+        mascot!.classList.add("is-booped", "is-happy");
+        spawnHearts();
+        say(phrases[Math.floor(Math.random() * phrases.length)]);
+      } else if (mood === "wink") {
+        mascot!.classList.add("is-winking", "is-happy");
+        say(";)");
+      } else {
+        mascot!.classList.add("is-dizzy", "is-booped");
+        say("whoa!");
+      }
+
+      moodTimer = window.setTimeout(clearMood, 650);
+    }
+
+    if (!reduceMotion) {
+      window.addEventListener(
+        "pointermove",
+        (event) => {
+          lookAt(event.clientX, event.clientY);
+        },
+        { passive: true },
+      );
+
+      idleTimer = window.setInterval(glanceIdle, 2800);
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          window.clearInterval(idleTimer);
+        } else {
+          idleTimer = window.setInterval(glanceIdle, 2800);
+        }
+      });
+    }
+
+    const mascotSvg = stage.querySelector("svg");
+
+    mascotSvg?.addEventListener("click", (event) => {
+      event.preventDefault();
+      react();
+    });
+
+    mascotSvg?.addEventListener("keydown", (event) => {
+      const keyEvent = event as KeyboardEvent;
+      if (keyEvent.key === "Enter" || keyEvent.key === " ") {
+        keyEvent.preventDefault();
+        react();
+      }
+    });
+  }
+</script>

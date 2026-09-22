@@ -1,0 +1,148 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ChannelLogo from '../../components/ChannelLogo.astro';
+import { getCollection, render } from 'astro:content';
+import { ArrowLeft, Clock, ExternalLink, Video } from '@lucide/astro';
+import { withBase } from '../../lib/path';
+
+export async function getStaticPaths() {
+  const tutorials = await getCollection('tutorials');
+  return tutorials.map((tut) => ({
+    params: { slug: tut.id },
+    props: { tut },
+  }));
+}
+
+const { tut } = Astro.props;
+const { data, id } = tut;
+const { Content } = await render(tut);
+
+const initialLetter = data.title.charAt(0).toUpperCase();
+
+const allCategories = data.categories && data.categories.length > 0 ? data.categories : [data.category];
+
+function getCategoryStyle(cat: string) {
+  switch (cat) {
+    case 'Premiere Pro':
+      return 'bg-purple-50 text-purple-700 border-purple-200/80';
+    case 'After Effects':
+      return 'bg-blue-50 text-blue-700 border-blue-200/80';
+    case 'Motion Design':
+      return 'bg-pink-50 text-pink-700 border-pink-200/80';
+    case 'Filmmaking':
+      return 'bg-amber-50 text-amber-700 border-amber-200/80';
+    case 'Music':
+      return 'bg-emerald-50 text-emerald-700 border-emerald-200/80';
+    case 'VFX':
+      return 'bg-cyan-50 text-cyan-700 border-cyan-200/80';
+    case '3D':
+      return 'bg-orange-50 text-orange-700 border-orange-200/80';
+    default:
+      return 'bg-slate-50 text-slate-700 border-slate-200/80';
+  }
+}
+---
+
+<BaseLayout
+  title={`${data.title} — Learning Archive | Editors Den`}
+  description={data.tagline}
+  activeTab="tutorials"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div>
+      <a
+        href={withBase('?tab=tutorial')}
+        class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-cyan-700 transition-colors"
+      >
+        <ArrowLeft class="w-3.5 h-3.5" />
+        <span>Back to Learning Directory</span>
+      </a>
+    </div>
+
+    <!-- Header Card -->
+    <div class="p-6 sm:p-8 rounded-[28px] bg-white/90 backdrop-blur-xl border border-slate-200/80 shadow-[0_10px_30px_-10px_rgba(15,23,42,0.06)] space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+        <div class="flex items-center gap-4">
+          <ChannelLogo id={id} name={data.title} class="w-14 h-14 rounded-2xl shadow-md" />
+          <div>
+            <div class="flex items-center gap-2 flex-wrap mb-1">
+              {allCategories.map((cat) => (
+                <span class={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border font-sans ${getCategoryStyle(cat)}`}>
+                  {cat}
+                </span>
+              ))}
+              <span class="text-xs font-mono font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                {data.creator_type}
+              </span>
+              <span class="text-xs font-mono text-cyan-700 font-semibold bg-cyan-50 px-2 py-0.5 rounded-md">
+                {data.nle}
+              </span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight font-display">
+              {data.title}
+            </h1>
+          </div>
+        </div>
+
+        <!-- Big Primary YouTube CTA -->
+        <a
+          href={data.youtube_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-red-600 hover:bg-red-700 transition-all shadow-sm shrink-0 cursor-pointer"
+        >
+          <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+          <span>YouTube</span>
+        </a>
+      </div>
+
+      <p class="text-sm sm:text-base text-slate-600 leading-relaxed font-sans">
+        {data.tagline}
+      </p>
+
+      <!-- Key Metadata Row -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+          <span class="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold block">Primary Software</span>
+          <span class="text-xs font-bold text-slate-800 font-sans mt-0.5 block">{data.nle}</span>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+          <span class="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold block">Target Level</span>
+          <span class="text-xs font-bold text-slate-800 font-sans mt-0.5 block">{data.difficulty}</span>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+          <span class="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold block">Format / Rhythm</span>
+          <span class="text-xs font-bold text-slate-800 font-sans mt-0.5 block">{data.duration}</span>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+          <span class="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold block">Access</span>
+          <span class="text-xs font-bold text-emerald-600 font-sans mt-0.5 block">100% Free on YouTube</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Creator Breakdown Content -->
+    <div class="p-8 sm:p-10 rounded-[28px] bg-white/85 backdrop-blur-md border border-slate-200/80 shadow-xs prose max-w-none text-sm text-slate-700 leading-relaxed prose-headings:text-slate-900 prose-headings:font-display prose-headings:font-bold prose-headings:tracking-tight prose-a:text-cyan-600 prose-a:font-semibold hover:prose-a:text-cyan-800">
+      <Content />
+    </div>
+
+    <!-- Bottom Action Card -->
+    <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+      <div>
+        <h3 class="text-base font-bold font-display">Ready to level up your skills?</h3>
+        <p class="text-xs text-slate-300 font-sans mt-0.5">Explore {data.title}'s official YouTube channel and playlists.</p>
+      </div>
+      <a
+        href={data.youtube_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-slate-900 bg-white hover:bg-slate-100 transition-colors shadow-xs shrink-0 cursor-pointer"
+      >
+        <span>Open Channel</span>
+        <ExternalLink class="w-3.5 h-3.5" />
+      </a>
+    </div>
+  </div>
+</BaseLayout>

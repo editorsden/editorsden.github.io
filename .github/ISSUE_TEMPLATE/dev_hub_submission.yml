@@ -1,0 +1,71 @@
+name: "Submit a Dev Hub Script"
+description: "Share a FFmpeg recipe, DaVinci Resolve Python automation, or Adobe CEP panel setup"
+title: "[Dev Hub Script]: "
+labels: ["dev-hub", "review-needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share your automation script with the **Editors Den** developer community!
+
+  - type: input
+    id: title
+    attributes:
+      label: Script / Blueprint Title
+      placeholder: e.g. FFmpeg ProRes Proxy Batch Transcoder
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tool_target
+    attributes:
+      label: Target Software / Environment
+      options:
+        - "FFmpeg"
+        - "DaVinci Resolve"
+        - "Adobe Premiere Pro"
+        - "Adobe After Effects"
+        - "CLI"
+        - "System"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Programming Language
+      options:
+        - "bash"
+        - "python"
+        - "javascript"
+        - "extendscript"
+        - "json"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty Level
+      options:
+        - "Beginner"
+        - "Intermediate"
+        - "Advanced"
+    validations:
+      required: true
+
+  - type: textarea
+    id: bottleneck
+    attributes:
+      label: Bottleneck / Problem Solved
+      placeholder: What manual editing hassle does this script automate?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Script Code & Usage
+      placeholder: Paste the script code, dependencies, and command line execution instructions.
+    validations:
+      required: true

@@ -1,0 +1,16 @@
+---
+const tutorialUrl = `${import.meta.env.BASE_URL}?tab=tutorial`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content={`0;url=${tutorialUrl}`} />
+    <title>Redirecting to Tutorials — Editors Den</title>
+    <script is:inline define:vars={{ tutorialUrl }}>
+      window.location.replace(tutorialUrl);
+    </script>
+  </head>
+  <body class="bg-white">
+  </body>
+</html>
