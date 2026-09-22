@@ -4,8 +4,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://robinxprince.github.io',
-  base: '/editorsden.github.io',
+  site: 'https://editorsden.github.io',
+  base: '/',
 
   devToolbar: {
     enabled: false,
