@@ -2,6 +2,7 @@
 import Header from '../components/Header.astro';
 import CommandPalette from '../components/CommandPalette.astro';
 import SubmitModal from '../components/SubmitModal.astro';
+import OsSvgSprite from '../components/OsSvgSprite.astro';
 import { withBase } from '../lib/path';
 import '../styles/global.css';
 
@@ -16,6 +17,8 @@ const {
   description = 'Curated software, plugins, tutorials, and hidden gems for video editors, colorists, and post-production professionals.',
   activeTab = ''
 } = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://editorsden.github.io').href;
 ---
 
 <!doctype html>
@@ -23,28 +26,29 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link rel="canonical" href={canonicalUrl} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
     
     <!-- Open Graph / Social -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalUrl} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
 
-    <!-- Google Fonts for Plus Jakarta Sans & JetBrains Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link 
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" 
-      rel="stylesheet" 
-    />
+    <!-- Self-hosted font preload for instant FCP/LCP without external network roundtrips -->
+    <link rel="preload" href={withBase('/fonts/plus-jakarta-sans-latin-400.woff2')} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={withBase('/fonts/plus-jakarta-sans-latin-600.woff2')} as="font" type="font/woff2" crossorigin />
   </head>
   <body class="h-full min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-white relative overflow-x-hidden bg-tech-grid font-sans text-slate-900 bg-white">
+    <OsSvgSprite />
     <!-- Ambient glowing light pools -->
     <div class="cyan-core-glow pointer-events-none absolute inset-0 z-0"></div>
     <div class="cyan-top-glow pointer-events-none absolute top-0 left-0 right-0 h-96 z-0"></div>
@@ -69,5 +73,68 @@ const {
 
     <!-- Global Tool Submission Modal -->
     <SubmitModal />
+
+    <!-- Global Code Block Copy Button Script -->
+    <script>
+      function mountCodeCopyButtons() {
+        document.querySelectorAll('pre').forEach((pre) => {
+          if (
+            pre.closest('#submit-tool-dialog') || 
+            pre.id === 'page-gen-preview' || 
+            pre.id === 'generated-md-preview' ||
+            pre.querySelector('.copy-code-btn')
+          ) {
+            return;
+          }
+
+          const wrapper = document.createElement('div');
+          wrapper.className = 'relative group my-4';
+          pre.parentNode?.insertBefore(wrapper, pre);
+          wrapper.appendChild(pre);
+
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'copy-code-btn absolute top-3 right-3 px-2.5 py-1 text-[11px] font-mono font-medium rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 transition-all opacity-90 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 shadow-sm cursor-pointer inline-flex items-center gap-1.5 z-10';
+          btn.setAttribute('aria-label', 'Copy code snippet');
+          btn.innerHTML = `
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+            </svg>
+            <span>Copy</span>
+          `;
+
+          btn.addEventListener('click', async () => {
+            const code = pre.querySelector('code')?.innerText || pre.innerText || '';
+            try {
+              await navigator.clipboard.writeText(code.trim());
+              btn.innerHTML = `
+                <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span class="text-emerald-400 font-semibold">Copied!</span>
+              `;
+              setTimeout(() => {
+                btn.innerHTML = `
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                  </svg>
+                  <span>Copy</span>
+                `;
+              }, 2000);
+            } catch (_) {}
+          });
+
+          wrapper.appendChild(btn);
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', mountCodeCopyButtons);
+      } else {
+        mountCodeCopyButtons();
+      }
+    </script>
   </body>
 </html>

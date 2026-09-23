@@ -22,9 +22,11 @@ interface Props {
       rank?: number;
     };
   };
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'auto' | 'high' | 'low';
 }
 
-const { tutorial } = Astro.props;
+const { tutorial, loading = 'lazy', fetchpriority = 'auto' } = Astro.props;
 const { data, id } = tutorial;
 
 const initialLetter = data.title.charAt(0).toUpperCase();
@@ -78,9 +80,8 @@ function getCategoryStyle(cat: string) {
 const primaryStyle = getCategoryStyle(data.category);
 ---
 
-<!-- Monolithic Card (Grid Mode) / Sleek Row (List Mode) -->
-<a 
-  href={withBase(`/tutorials/${id}`)}
+<!-- Monolithic Card (Grid Mode) / Sleek Row (List Mode) with Accessible Stretched Link -->
+<div 
   class="tool-card-item group relative flex flex-col justify-between bg-white/90 backdrop-blur-md rounded-[28px] p-8 border border-slate-100 shadow-[0_10px_30px_-10px_rgba(15,23,42,0.06)] hover:shadow-[0_20px_40px_-12px_rgba(15,23,42,0.1)] transition-all duration-300"
   data-tool-card
   data-title={data.title.toLowerCase()}
@@ -94,46 +95,50 @@ const primaryStyle = getCategoryStyle(data.category);
   data-solution={data.tagline.toLowerCase()}
   data-type="tutorial"
   data-gem="false"
+  style="display: none;"
 >
-  <!-- Card View Mode (Default Monolithic Float) -->
-  <div class="card-view-mode flex flex-col justify-between h-full">
+  <div class="card-inner-container flex flex-col justify-between h-full w-full">
     <div>
       <!-- Top Action & Meta -->
-      <div class="flex items-center justify-between mb-5">
+      <div class="card-header-block flex items-center justify-between mb-5">
         <!-- Official YouTube Channel Logo -->
-        <div class="transition-transform group-hover:scale-105">
-          <ChannelLogo id={id} name={data.title} class="w-12 h-12 rounded-2xl" />
+        <div class="card-logo-wrap transition-transform group-hover:scale-105 shrink-0">
+          <ChannelLogo id={id} name={data.title} class="w-12 h-12 rounded-2xl" loading={loading} fetchpriority={fetchpriority} width={48} height={48} />
         </div>
 
-        <div class="flex items-center gap-2">
-          <!-- Direct YouTube Click-out Link -->
-          <button
-            type="button"
-            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 hover:bg-red-100 text-red-700 border border-red-200/80 transition-colors cursor-pointer shadow-2xs font-sans"
-            onclick={`event.stopPropagation(); window.open('${data.youtube_url}', '_blank');`}
+        <div class="card-header-actions flex items-center gap-2">
+          <!-- Direct YouTube Link (Accessible separate link) -->
+          <a
+            href={data.youtube_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="relative z-10 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 hover:bg-red-100 text-red-700 border border-red-200/80 transition-colors cursor-pointer shadow-2xs font-sans"
             title={`Watch ${data.title} on YouTube`}
           >
-            <svg class="w-3.5 h-3.5 fill-red-600" viewBox="0 0 24 24">
+            <svg class="w-3.5 h-3.5 fill-red-600" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
             </svg>
             <span class="text-[11px]">YouTube</span>
-          </button>
+          </a>
 
-          <div class="w-7 h-7 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 group-hover:bg-slate-100 transition-colors shrink-0">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <div class="card-arrow-icon w-7 h-7 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 group-hover:bg-slate-100 transition-colors shrink-0 pointer-events-none">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"></path>
             </svg>
           </div>
         </div>
       </div>
 
-      <!-- Title, Niche & Handle -->
-      <div class="mb-3">
-        <h3 class="text-xl font-bold text-slate-900 tracking-tight leading-snug font-display group-hover:text-cyan-700 transition-colors">
-          {data.title}
+      <!-- Title, Niche & Handle with Stretched Link -->
+      <div class="card-body-block mb-3">
+        <h3 class="card-title text-xl font-bold text-slate-900 tracking-tight leading-snug font-display group-hover:text-cyan-700 transition-colors">
+          <a href={withBase(`/tutorials/${id}`)} class="focus:outline-none focus:underline">
+            <span class="absolute inset-0 z-0" aria-hidden="true"></span>
+            {data.title}
+          </a>
         </h3>
         
-        <div class="flex items-center gap-2 mt-1 flex-wrap">
+        <div class="card-meta flex items-center gap-2 mt-1 flex-wrap relative z-10">
           <span class="text-xs font-semibold text-slate-500 font-sans">
             {data.category}
           </span>
@@ -146,17 +151,17 @@ const primaryStyle = getCategoryStyle(data.category);
             </>
           )}
         </div>
-      </div>
 
-      <!-- Clean Copy -->
-      <p class="text-sm text-slate-500 font-normal leading-relaxed mb-6 line-clamp-2 font-sans">
-        {data.tagline}
-      </p>
+        <!-- Clean Copy -->
+        <p class="card-tagline text-sm text-slate-500 font-normal leading-relaxed mb-6 line-clamp-2 font-sans">
+          {data.tagline}
+        </p>
+      </div>
     </div>
 
     <!-- Bottom Row: Category Tags & Level -->
-    <div class="flex items-center justify-between gap-2 pt-2">
-      <div class="flex items-center gap-1.5 flex-wrap min-w-0">
+    <div class="card-footer-block flex items-center justify-between gap-2 pt-2 relative z-10">
+      <div class="card-badges flex items-center gap-1.5 flex-wrap min-w-0">
         {allCategories.map((cat) => {
           const style = getCategoryStyle(cat);
           return (
@@ -168,69 +173,9 @@ const primaryStyle = getCategoryStyle(data.category);
         })}
       </div>
 
-      <span class="text-[11px] font-mono text-slate-500 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200/60 shrink-0">
+      <span class="card-difficulty text-[11px] font-mono text-slate-500 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200/60 shrink-0">
         {data.difficulty}
       </span>
     </div>
   </div>
-
-  <!-- List View Mode (Compact Row) -->
-  <div class="list-view-mode hidden items-center justify-between gap-4 w-full">
-    <!-- Left: Channel Logo + Title + Category + Tagline -->
-    <div class="flex items-center gap-3.5 min-w-0 flex-1">
-      <ChannelLogo id={id} name={data.title} class="w-9 h-9 rounded-xl" />
-      <div class="min-w-0 flex-1">
-        <div class="flex items-center gap-2 flex-wrap">
-          <h3 class="text-sm font-bold text-slate-900 group-hover:text-cyan-700 transition-colors font-display truncate">
-            {data.title}
-          </h3>
-          <span class="text-[11px] font-medium text-slate-400 shrink-0 font-sans">
-            · {allCategories.join(', ')}
-          </span>
-          {data.channel_name && (
-            <span class="text-[11px] font-mono text-cyan-600 shrink-0 hidden md:inline">
-              · {data.channel_name}
-            </span>
-          )}
-        </div>
-        <p class="text-xs text-slate-500 truncate hidden md:block mt-0.5 font-sans">
-          {data.tagline}
-        </p>
-      </div>
-    </div>
-
-    <!-- Right: Category Tag, YouTube Link, Arrow -->
-    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-      <div class="hidden sm:flex items-center gap-1.5">
-        {allCategories.map((cat) => {
-          const style = getCategoryStyle(cat);
-          return (
-            <span class={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-semibold border font-sans ${style.badge}`}>
-              <span class={`w-1.5 h-1.5 rounded-full ${style.dot}`}></span>
-              <span>{cat}</span>
-            </span>
-          );
-        })}
-      </div>
-
-      <!-- YouTube Button -->
-      <button
-        type="button"
-        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 hover:bg-red-100 text-red-700 border border-red-200/80 transition-colors cursor-pointer font-sans"
-        onclick={`event.stopPropagation(); window.open('${data.youtube_url}', '_blank');`}
-        title={`Watch ${data.title} on YouTube`}
-      >
-        <svg class="w-3 h-3 fill-red-600" viewBox="0 0 24 24">
-          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-        </svg>
-        <span class="text-[10px]">YouTube</span>
-      </button>
-
-      <div class="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 group-hover:bg-slate-100 transition-colors shrink-0">
-        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"></path>
-        </svg>
-      </div>
-    </div>
-  </div>
-</a>
+</div>

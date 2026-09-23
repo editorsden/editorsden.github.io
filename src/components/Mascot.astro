@@ -11,29 +11,41 @@
   <div class="relative select-none" style="width: 320px; height: 320px;">
     <!-- Premiere Pro Floating Badge (Top Left) -->
     <div
-      class="badge-float-1 absolute -top-3 -left-6 z-20 flex items-center justify-center rounded-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer select-none"
+      class="badge-float-1 mascot-badge absolute top-4 -left-6 z-20 flex items-center justify-center rounded-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-cyan-400"
       style="width: 52px; height: 52px; background: #00005b; border: 1.5px solid rgba(153, 153, 255, 0.4); box-shadow: 0 10px 25px -5px rgba(0, 0, 91, 0.15);"
-      title="Adobe Premiere Pro"
+      title="Filter for Adobe Premiere Pro"
+      role="button"
+      tabindex="0"
+      aria-label="Filter directory for Adobe Premiere Pro"
+      data-mascot-filter="Premiere Pro"
     >
       <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 19px; color: #9999ff; letter-spacing: -0.04em;">Pr</span>
     </div>
 
     <!-- After Effects Floating Badge (Top Right) -->
     <div
-      class="badge-float-2 absolute top-2 -right-6 z-20 flex items-center justify-center rounded-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer select-none"
+      class="badge-float-2 mascot-badge absolute top-2 -right-6 z-20 flex items-center justify-center rounded-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-cyan-400"
       style="width: 52px; height: 52px; background: #00005b; border: 1.5px solid rgba(153, 153, 255, 0.4); box-shadow: 0 10px 25px -5px rgba(0, 0, 91, 0.15);"
-      title="Adobe After Effects"
+      title="Filter for Adobe After Effects"
+      role="button"
+      tabindex="0"
+      aria-label="Filter directory for Adobe After Effects"
+      data-mascot-filter="After Effects"
     >
       <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 19px; color: #9999ff; letter-spacing: -0.04em;">Ae</span>
     </div>
 
     <!-- DaVinci Resolve Color Wheel Badge (Bottom Left) -->
     <div
-      class="badge-float-3 absolute bottom-8 -left-8 z-20 flex items-center justify-center rounded-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer select-none"
+      class="badge-float-3 mascot-badge absolute bottom-8 -left-8 z-20 flex items-center justify-center rounded-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-cyan-400"
       style="width: 52px; height: 52px; background: #ffffff; border: 1.5px solid rgba(14, 165, 233, 0.2); box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);"
-      title="DaVinci Resolve"
+      title="Filter for DaVinci Resolve"
+      role="button"
+      tabindex="0"
+      aria-label="Filter directory for DaVinci Resolve"
+      data-mascot-filter="DaVinci Resolve"
     >
-      <svg fill="none" height="28" viewBox="0 0 24 24" width="28">
+      <svg fill="none" height="28" viewBox="0 0 24 24" width="28" aria-hidden="true">
         <circle cx="12" cy="7.5" fill="#ef4444" r="3.5"></circle>
         <circle cx="7.5" cy="15" fill="#3b82f6" r="3.5"></circle>
         <circle cx="16.5" cy="15" fill="#10b981" r="3.5"></circle>
@@ -42,9 +54,13 @@
 
     <!-- Photoshop Badge (Bottom Right) -->
     <div
-      class="badge-float-4 absolute bottom-6 -right-6 z-20 flex items-center justify-center rounded-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer select-none"
+      class="badge-float-4 mascot-badge absolute bottom-6 -right-6 z-20 flex items-center justify-center rounded-2xl shadow-xl transition-transform hover:scale-110 cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-cyan-400"
       style="width: 52px; height: 52px; background: #001e36; border: 1.5px solid rgba(49, 168, 255, 0.4); box-shadow: 0 10px 25px -5px rgba(0, 30, 54, 0.15);"
-      title="Adobe Photoshop"
+      title="Filter for Graphic & Image Utilities"
+      role="button"
+      tabindex="0"
+      aria-label="Filter directory for Graphics and Image Utilities"
+      data-mascot-filter="Workflow & Organization"
     >
       <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 19px; color: #31a8ff; letter-spacing: -0.04em;">Ps</span>
     </div>
@@ -291,22 +307,52 @@
       moodTimer = window.setTimeout(clearMood, 650);
     }
 
+    let isVisible = true;
+
     if (!reduceMotion) {
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              isVisible = entry.isIntersecting;
+              if (isVisible) {
+                stage.classList.remove("is-offscreen");
+                if (!idleTimer) idleTimer = window.setInterval(glanceIdle, 2800);
+              } else {
+                stage.classList.add("is-offscreen");
+                if (idleTimer) {
+                  window.clearInterval(idleTimer);
+                  idleTimer = 0;
+                }
+              }
+            }
+          },
+          { rootMargin: "60px" },
+        );
+        observer.observe(stage);
+      }
+
       window.addEventListener(
         "pointermove",
         (event) => {
+          if (!isVisible) return;
           lookAt(event.clientX, event.clientY);
         },
         { passive: true },
       );
 
-      idleTimer = window.setInterval(glanceIdle, 2800);
+      if (!("IntersectionObserver" in window)) {
+        idleTimer = window.setInterval(glanceIdle, 2800);
+      }
 
       document.addEventListener("visibilitychange", () => {
-        if (document.hidden) {
-          window.clearInterval(idleTimer);
+        if (document.hidden || !isVisible) {
+          if (idleTimer) {
+            window.clearInterval(idleTimer);
+            idleTimer = 0;
+          }
         } else {
-          idleTimer = window.setInterval(glanceIdle, 2800);
+          if (!idleTimer) idleTimer = window.setInterval(glanceIdle, 2800);
         }
       });
     }
@@ -324,6 +370,27 @@
         keyEvent.preventDefault();
         react();
       }
+    });
+
+    stage.querySelectorAll<HTMLElement>("[data-mascot-filter]").forEach((badge) => {
+      function handleBadgeClick(e: Event) {
+        e.preventDefault();
+        react();
+        const filterVal = badge.getAttribute("data-mascot-filter") || "";
+        const isCat = filterVal === "Workflow & Organization";
+        window.dispatchEvent(
+          new CustomEvent("editorsden:mascot-filter", {
+            detail: { filter: filterVal, type: isCat ? "category" : "nle" },
+          }),
+        );
+      }
+
+      badge.addEventListener("click", handleBadgeClick);
+      badge.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          handleBadgeClick(e);
+        }
+      });
     });
   }
 </script>

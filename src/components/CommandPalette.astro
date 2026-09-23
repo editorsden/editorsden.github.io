@@ -1,41 +1,11 @@
 ---
 import { Search } from '@lucide/astro';
-import { getCollection } from 'astro:content';
-import { withBase } from '../lib/path';
-
-const allTools = await getCollection('tools');
-const allTutorials = await getCollection('tutorials');
-
-const searchIndex = [
-  ...allTools.map((t) => ({
-    id: t.id,
-    url: withBase(`/tools/${t.id}`),
-    title: t.data.title,
-    tagline: t.data.tagline,
-    category: t.data.category,
-    pricing: t.data.pricing,
-    bottleneck: t.data.bottleneck,
-    solution: t.data.solution,
-    tags: t.data.tags,
-  })),
-  ...allTutorials.map((tut) => ({
-    id: tut.id,
-    url: withBase(`/tutorials/${tut.id}`),
-    title: tut.data.title,
-    tagline: tut.data.tagline,
-    category: `${tut.data.category} · Guide`,
-    pricing: tut.data.duration,
-    bottleneck: tut.data.tagline,
-    solution: tut.data.tagline,
-    tags: tut.data.tags,
-  })),
-];
 ---
 
 <dialog
   id="command-palette-dialog"
-  closedby="any"
   aria-label="Command Palette Search"
+  aria-modal="true"
   class="fixed inset-0 m-auto w-full max-w-xl bg-white/95 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-[0_16px_48px_rgba(14,165,233,0.15)] p-0 text-slate-900 backdrop:bg-slate-900/30 backdrop:backdrop-blur-xs overflow-hidden outline-none"
 >
   <div class="flex flex-col max-h-[80vh]">
@@ -45,7 +15,7 @@ const searchIndex = [
       <input
         id="palette-search-input"
         type="text"
-        placeholder="Type a tool or bottleneck (e.g. 'mkv', 'silence', 'excalibur')..."
+        placeholder="Type a tool, script, or bottleneck (e.g. 'prores', 'mkv', 'silence', 'excalibur')..."
         class="w-full bg-transparent text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
         autocomplete="off"
         spellcheck="false"
@@ -71,17 +41,22 @@ const searchIndex = [
   </div>
 </dialog>
 
-<!-- Search Index Data -->
-<script id="tools-search-index" type="application/json" set:html={JSON.stringify(searchIndex)} />
-
 <script>
-  import Fuse from 'fuse.js';
+  import { withBase } from '../lib/path';
 
   const dialog = document.getElementById('command-palette-dialog') as HTMLDialogElement | null;
   const input = document.getElementById('palette-search-input') as HTMLInputElement | null;
   const resultsList = document.getElementById('palette-results-list');
   const triggerBtn = document.getElementById('search-palette-trigger');
-  const indexEl = document.getElementById('tools-search-index');
+
+  function escapeHtml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 
   interface SearchItem {
     id: string;
@@ -96,28 +71,43 @@ const searchIndex = [
   }
 
   let tools: SearchItem[] = [];
-  if (indexEl && indexEl.textContent) {
-    try {
-      tools = JSON.parse(indexEl.textContent);
-    } catch {
-      tools = [];
-    }
-  }
-
-  const fuse = new Fuse(tools, {
-    keys: [
-      { name: 'title', weight: 0.35 },
-      { name: 'bottleneck', weight: 0.25 },
-      { name: 'solution', weight: 0.2 },
-      { name: 'tags', weight: 0.1 },
-      { name: 'category', weight: 0.1 },
-    ],
-    threshold: 0.35,
-    distance: 100,
-  });
-
+  let fuseInstance: any = null;
+  let loadPromise: Promise<any> | null = null;
   let selectedIndex = 0;
   let currentResults: SearchItem[] = [];
+  let pendingQuery = '';
+
+  async function initSearch() {
+    if (fuseInstance) return fuseInstance;
+    if (loadPromise) return loadPromise;
+
+    loadPromise = (async () => {
+      try {
+        const [{ default: Fuse }, res] = await Promise.all([
+          import('fuse.js'),
+          fetch(withBase('/search-index.json'))
+        ]);
+        tools = await res.json();
+        fuseInstance = new Fuse(tools, {
+          keys: [
+            { name: 'title', weight: 0.35 },
+            { name: 'bottleneck', weight: 0.25 },
+            { name: 'solution', weight: 0.2 },
+            { name: 'tags', weight: 0.1 },
+            { name: 'category', weight: 0.1 },
+          ],
+          threshold: 0.35,
+          distance: 100,
+        });
+        return fuseInstance;
+      } catch (err) {
+        console.error('Failed to load search index:', err);
+        return null;
+      }
+    })();
+
+    return loadPromise;
+  }
 
   function openPalette(initialQuery = '') {
     if (!dialog) return;
@@ -125,8 +115,24 @@ const searchIndex = [
     if (input) {
       input.value = initialQuery;
       input.focus();
+      input.select();
     }
-    renderResults(initialQuery);
+    pendingQuery = initialQuery;
+
+    if (!fuseInstance) {
+      if (resultsList) {
+        resultsList.innerHTML = `
+          <div class="py-8 text-center text-slate-400 text-xs font-sans">
+            Loading search index...
+          </div>
+        `;
+      }
+      initSearch().then(() => {
+        renderResults(input?.value || pendingQuery);
+      });
+    } else {
+      renderResults(initialQuery);
+    }
   }
 
   function closePalette() {
@@ -136,13 +142,18 @@ const searchIndex = [
 
   function renderResults(query: string) {
     if (!resultsList) return;
+    if (!fuseInstance) {
+      pendingQuery = query;
+      return;
+    }
+
     const trimmed = query.trim();
 
     if (!trimmed) {
       currentResults = tools.slice(0, 5);
     } else {
-      const searchRes = fuse.search(trimmed);
-      currentResults = searchRes.map((r) => r.item);
+      const searchRes = fuseInstance.search(trimmed);
+      currentResults = searchRes.map((r: any) => r.item);
     }
 
     selectedIndex = 0;
@@ -150,7 +161,7 @@ const searchIndex = [
     if (currentResults.length === 0) {
       resultsList.innerHTML = `
         <div class="py-10 text-center text-slate-400 text-xs font-sans">
-          No tools found matching "${query}"
+          No tools or scripts found matching "${escapeHtml(trimmed)}"
         </div>
       `;
       return;
@@ -168,14 +179,14 @@ const searchIndex = [
             }"
           >
             <div class="flex items-center justify-between gap-2">
-              <span class="text-xs font-semibold text-slate-900 font-display">${tool.title}</span>
+              <span class="text-xs font-semibold text-slate-900 font-display">${escapeHtml(tool.title)}</span>
               <div class="flex items-center gap-1.5 text-[10px] font-mono text-cyan-700/80">
-                <span>${tool.category}</span>
+                <span>${escapeHtml(tool.category)}</span>
                 <span>·</span>
-                <span>${tool.pricing}</span>
+                <span>${escapeHtml(tool.pricing)}</span>
               </div>
             </div>
-            <p class="text-xs text-slate-500 truncate mt-0.5">${tool.tagline}</p>
+            <p class="text-xs text-slate-500 truncate mt-0.5">${escapeHtml(tool.tagline)}</p>
           </a>
         `;
       })
@@ -239,13 +250,7 @@ const searchIndex = [
 
   if (dialog) {
     dialog.addEventListener('click', (e) => {
-      const rect = dialog.getBoundingClientRect();
-      const isInDialog =
-        rect.top <= e.clientY &&
-        e.clientY <= rect.top + rect.height &&
-        rect.left <= e.clientX &&
-        e.clientX <= rect.left + rect.width;
-      if (!isInDialog) {
+      if (e.target === dialog) {
         closePalette();
       }
     });
@@ -253,6 +258,9 @@ const searchIndex = [
 
   if (triggerBtn) {
     triggerBtn.addEventListener('click', () => openPalette());
+    // Preload search index on hover or focus of search button
+    triggerBtn.addEventListener('pointerenter', () => initSearch(), { once: true });
+    triggerBtn.addEventListener('focus', () => initSearch(), { once: true });
   }
 
   window.addEventListener('keydown', (e) => {

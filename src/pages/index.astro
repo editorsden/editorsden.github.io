@@ -263,8 +263,19 @@ const sortedTools = allTools.sort((a, b) => {
           id="tools-cards-grid"
           class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6"
         >
-          {sortedTools.map((tool) => <ToolCard tool={tool} />)}
-          {sortedTutorials.map((tut) => <TutorialCard tutorial={tut} />)}
+          {sortedTools.map((tool, index) => (
+            <ToolCard 
+              tool={tool} 
+              loading={index < 6 ? 'eager' : 'lazy'} 
+              fetchpriority={index === 0 ? 'high' : 'auto'} 
+            />
+          ))}
+          {sortedTutorials.map((tut, index) => (
+            <TutorialCard 
+              tutorial={tut} 
+              loading={index < 6 ? 'eager' : 'lazy'} 
+            />
+          ))}
         </div>
 
         <!-- Empty State -->
@@ -723,18 +734,27 @@ const sortedTools = allTools.sort((a, b) => {
     if (state.query) params.set("q", state.query);
     if (state.nle) params.set("nle", state.nle);
     if (state.category) params.set("cat", state.category);
+    if (state.os) params.set("os", state.os);
+    if (state.pricing) params.set("pricing", state.pricing);
     const newUrl = params.toString()
       ? `?${params.toString()}`
       : window.location.pathname;
     window.history.replaceState({}, "", newUrl);
   }
 
-  // Mobile Filter Drawer Toggle
+  // Mobile Filter Drawer Toggle & Close
   const mobileFilterTrigger = document.getElementById("mobile-filters-trigger");
+  const mobileCloseFiltersBtn = document.getElementById("mobile-close-filters-btn");
   const filterSidebarPanel = document.getElementById("filter-sidebar-panel");
   if (mobileFilterTrigger && filterSidebarPanel) {
     mobileFilterTrigger.addEventListener("click", () => {
       filterSidebarPanel.classList.toggle("hidden");
+    });
+  }
+  if (mobileCloseFiltersBtn && filterSidebarPanel) {
+    mobileCloseFiltersBtn.addEventListener("click", () => {
+      filterSidebarPanel.classList.add("hidden");
+      document.getElementById("directory")?.scrollIntoView({ behavior: "smooth" });
     });
   }
 
@@ -907,15 +927,51 @@ const sortedTools = allTools.sort((a, b) => {
     state.query = urlParams.get("q") || "";
     if (searchInput) searchInput.value = state.query;
   }
+  if (urlParams.get("cat")) {
+    state.category = urlParams.get("cat") || "";
+    if (categorySelect) categorySelect.value = state.category;
+  }
   if (urlParams.get("os")) {
     state.os = urlParams.get("os") || "";
     if (osSelect) osSelect.value = state.os;
+  }
+  if (urlParams.get("pricing")) {
+    state.pricing = urlParams.get("pricing") || "";
+    if (pricingSelect) pricingSelect.value = state.pricing;
   }
   if (urlParams.get("nle")) {
     const nleVal = urlParams.get("nle");
     const nleBtn = document.querySelector(`[data-filter-nle="${nleVal}"]`);
     if (nleBtn) (nleBtn as HTMLButtonElement).click();
   }
+
+  // Denny Mascot Interactive Badge Filter Handler
+  window.addEventListener("editorsden:mascot-filter", (e: any) => {
+    const detail = e.detail;
+    if (!detail) return;
+    if (detail.type === "nle") {
+      state.nle = detail.filter;
+      nlePills.forEach((b) => {
+        const val = b.getAttribute("data-filter-nle") || "";
+        if (val === detail.filter) {
+          b.className =
+            "nle-pill px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer bg-slate-900 text-white font-sans";
+        } else {
+          b.className =
+            "nle-pill px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer bg-slate-50 hover:bg-white text-slate-600 hover:text-slate-900 border border-slate-200/70 shadow-2xs font-sans";
+        }
+      });
+      // If currently on tutorials tab, reset tab so tools for this NLE are displayed
+      if (state.tab === "tutorial" || state.tab === "tutorials") {
+        state.tab = "";
+      }
+    } else if (detail.type === "category") {
+      state.category = detail.filter;
+      if (categorySelect) categorySelect.value = detail.filter;
+    }
+    applyFilters();
+    document.getElementById("directory")?.scrollIntoView({ behavior: "smooth" });
+  });
 
   // View mode toggle (Card Grid vs List Mode)
   const gridViewBtn = document.getElementById("view-mode-grid");
@@ -974,7 +1030,7 @@ const sortedTools = allTools.sort((a, b) => {
 </script>
 
 <style is:global>
-  /* List Mode Dynamic Layout */
+  /* List Mode Dynamic Layout via CSS Reflow */
   #tools-cards-grid[data-view="list"] {
     display: flex !important;
     flex-direction: column !important;
@@ -984,16 +1040,73 @@ const sortedTools = allTools.sort((a, b) => {
   #tools-cards-grid[data-view="list"] .tool-card-item {
     padding: 0.875rem 1.5rem !important;
     border-radius: 20px !important;
-    flex-direction: row !important;
-    align-items: center !important;
   }
 
-  #tools-cards-grid[data-view="list"] .card-view-mode {
+  #tools-cards-grid[data-view="list"] .card-inner-container {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 1rem !important;
+  }
+
+  #tools-cards-grid[data-view="list"] .card-inner-container > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  #tools-cards-grid[data-view="list"] .card-header-block {
+    margin-bottom: 0 !important;
+  }
+
+  #tools-cards-grid[data-view="list"] .card-header-actions {
     display: none !important;
   }
 
-  #tools-cards-grid[data-view="list"] .list-view-mode {
-    display: flex !important;
+  #tools-cards-grid[data-view="list"] .card-logo-wrap,
+  #tools-cards-grid[data-view="list"] .card-logo-wrap img,
+  #tools-cards-grid[data-view="list"] .card-logo-wrap div {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    border-radius: 0.75rem !important;
+  }
+
+  #tools-cards-grid[data-view="list"] .card-body-block {
+    margin-bottom: 0 !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  #tools-cards-grid[data-view="list"] .card-title {
+    font-size: 0.875rem !important;
+    line-height: 1.25rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  #tools-cards-grid[data-view="list"] .card-tagline {
+    display: none !important;
+    margin-bottom: 0 !important;
+  }
+
+  @media (min-width: 768px) {
+    #tools-cards-grid[data-view="list"] .card-tagline {
+      display: block !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      font-size: 0.75rem !important;
+      margin-top: 0.125rem !important;
+    }
+  }
+
+  #tools-cards-grid[data-view="list"] .card-footer-block {
+    padding-top: 0 !important;
+    flex-shrink: 0 !important;
+    gap: 0.75rem !important;
   }
 
   /* Thin scrollbar for sticky filter sidebar */

@@ -4,11 +4,24 @@ interface Props {
   name?: string;
   class?: string;
   showBadge?: boolean;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'auto' | 'high' | 'low';
+  width?: number;
+  height?: number;
 }
 
 import { withBase } from '../lib/path';
 
-const { id, name = '', class: className = 'w-12 h-12 rounded-2xl', showBadge = true } = Astro.props;
+const { 
+  id, 
+  name = '', 
+  class: className = 'w-12 h-12 rounded-2xl', 
+  showBadge = true,
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  width = 48,
+  height = 48
+} = Astro.props;
 const initialLetter = (name || id).charAt(0).toUpperCase();
 const logoSrc = withBase(`/creators/${id}.jpg`);
 ---
@@ -18,8 +31,11 @@ const logoSrc = withBase(`/creators/${id}.jpg`);
     <img 
       src={logoSrc} 
       alt={`${name || id} YouTube channel logo`} 
+      width={width}
+      height={height}
       class="w-full h-full object-cover"
-      loading="lazy"
+      loading={loading}
+      fetchpriority={fetchpriority}
       decoding="async"
       onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
     />

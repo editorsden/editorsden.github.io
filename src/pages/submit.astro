@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { Plus, Code, ExternalLink, ArrowLeft, Copy } from '@lucide/astro';
+import { Plus, Code, ExternalLink, ArrowLeft, Copy, Sparkles, Terminal } from '@lucide/astro';
 import GithubIcon from '../components/GithubIcon.astro';
 import { withBase } from '../lib/path';
 
@@ -19,76 +19,84 @@ const categories = [
   title="Submit a Tool or Script — Editors Den"
   description="Contribute a post-production plugin, workflow extension, or FFmpeg/Python script to the Editors Den archive."
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 space-y-10">
     <!-- Back to Archive Link -->
     <div>
-      <a href={withBase('/')} class="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors">
+      <a 
+        href={withBase('/')} 
+        class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-cyan-700 transition-colors"
+      >
         <ArrowLeft class="w-3.5 h-3.5" />
         <span>Back to Archive</span>
       </a>
     </div>
 
     <!-- Header Banner -->
-    <div class="space-y-3 pb-8 border-b border-zinc-200">
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight">
+    <div class="space-y-3 pb-8 border-b border-cyan-500/20">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-cyan-50 border border-cyan-200/80 text-cyan-800">
+        <Sparkles class="w-3 h-3 text-cyan-500" />
+        <span>Community Contributions</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-display">
         Add to the Editors Den Archive
       </h1>
 
-      <p class="text-sm sm:text-base text-zinc-500 max-w-2xl leading-relaxed">
-        Whether you built an indie Premiere extension, discovered an obscure OpenFX demuxer, or crafted a life-saving FFmpeg proxy script, submit it here so thousands of editors can benefit.
+      <p class="text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed font-sans">
+        Whether you built an indie Premiere extension, discovered an obscure OpenFX demuxer, or crafted a life-saving FFmpeg proxy script, submit it here so thousands of post-production editors can benefit.
       </p>
     </div>
 
     <!-- Submission Options Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Option 1: GitHub Issue Template (Fast Track) -->
-      <div class="p-6 rounded-2xl bg-white border border-zinc-200 space-y-4 flex flex-col justify-between shadow-xs">
+      <div class="p-6 sm:p-7 rounded-[24px] bg-white/90 backdrop-blur-xl border border-cyan-500/20 space-y-4 flex flex-col justify-between shadow-xs hover:border-cyan-400/40 transition-all">
         <div class="space-y-2">
-          <div class="flex items-center gap-2 text-zinc-900 font-semibold text-sm">
-            <GithubIcon class="w-4 h-4 text-zinc-700" />
-            <span>Fast-Track: GitHub Issue</span>
+          <div class="flex items-center gap-2 text-slate-900 font-semibold text-sm font-display">
+            <GithubIcon class="w-4 h-4 text-slate-700" />
+            <span>Fast-Track: GitHub Issue Form</span>
           </div>
-          <p class="text-xs text-zinc-500 leading-relaxed">
+          <p class="text-xs text-slate-500 leading-relaxed font-sans">
             Fill out our standardized GitHub Issue Form. Our maintainers will verify the software, test compatibility, and merge the entry directly into the archive repository.
           </p>
         </div>
 
-        <div class="pt-4 space-y-2">
+        <div class="pt-4 space-y-2.5">
           <a
-            href="https://github.com/editors-den/archive/issues/new?template=tool_submission.yml"
+            href="https://github.com/editorsden/editorsden.github.io/issues/new?template=tool_submission.yml"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center justify-center gap-1.5 w-full px-4 py-2.5 text-xs font-medium text-white bg-black hover:bg-zinc-800 rounded-full transition-colors shadow-sm"
+            class="inline-flex items-center justify-center gap-1.5 w-full px-4 py-2.5 text-xs font-medium text-white bg-slate-900 hover:bg-cyan-600 rounded-full transition-colors shadow-xs"
           >
             <span>Submit Tool via GitHub Form</span>
-            <ExternalLink class="w-3 h-3" />
+            <ExternalLink class="w-3.5 h-3.5" />
           </a>
 
           <a
-            href="https://github.com/editors-den/archive/issues/new?template=dev_hub_submission.yml"
+            href="https://github.com/editorsden/editorsden.github.io/issues/new?template=dev_hub_submission.yml"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center justify-center gap-1.5 w-full px-4 py-2 text-xs font-medium text-zinc-700 hover:text-black bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 rounded-full transition-colors"
+            class="inline-flex items-center justify-center gap-1.5 w-full px-4 py-2 text-xs font-medium text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-200 rounded-full transition-colors"
           >
             <span>Submit Dev Hub Script</span>
-            <ExternalLink class="w-3 h-3" />
+            <ExternalLink class="w-3.5 h-3.5" />
           </a>
         </div>
       </div>
 
       <!-- Option 2: Pull Request Method -->
-      <div class="p-6 rounded-2xl bg-white border border-zinc-200 space-y-4 flex flex-col justify-between shadow-xs">
+      <div class="p-6 sm:p-7 rounded-[24px] bg-white/90 backdrop-blur-xl border border-cyan-500/20 space-y-4 flex flex-col justify-between shadow-xs hover:border-cyan-400/40 transition-all">
         <div class="space-y-2">
-          <div class="flex items-center gap-2 text-zinc-900 font-semibold text-sm">
-            <Code class="w-4 h-4 text-zinc-700" />
+          <div class="flex items-center gap-2 text-slate-900 font-semibold text-sm font-display">
+            <Code class="w-4 h-4 text-slate-700" />
             <span>Direct Pull Request</span>
           </div>
-          <p class="text-xs text-zinc-500 leading-relaxed">
-            For developers: Fork the repository, add your Markdown file to <code class="text-zinc-900 bg-zinc-100 px-1 py-0.5 rounded">src/content/tools/</code>, and open a Pull Request.
+          <p class="text-xs text-slate-500 leading-relaxed font-sans">
+            For developers: Fork the repository, add your Markdown file to <code class="text-cyan-800 bg-cyan-50 border border-cyan-200/80 px-1.5 py-0.5 rounded text-[11px] font-mono">src/content/tools/</code>, and open a Pull Request.
           </p>
         </div>
 
-        <div class="p-3.5 rounded-xl bg-zinc-900 font-mono text-[11px] text-zinc-300">
+        <div class="p-4 rounded-xl bg-slate-950 font-mono text-[11px] text-cyan-300 border border-cyan-500/30 leading-relaxed shadow-2xs">
           git checkout -b add-my-tool<br />
           touch src/content/tools/my-tool.md<br />
           git commit -m "feat: add my tool"<br />
@@ -98,61 +106,61 @@ const categories = [
     </div>
 
     <!-- Frontmatter Generator -->
-    <div class="p-8 rounded-2xl bg-white border border-zinc-200 space-y-6 shadow-xs">
-      <div class="flex items-center justify-between border-b border-zinc-100 pb-4">
+    <div class="p-6 sm:p-8 rounded-[28px] bg-white/90 backdrop-blur-xl border border-cyan-500/20 space-y-6 shadow-xs">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
         <div>
-          <h2 class="text-base font-semibold text-zinc-900">Interactive Markdown Generator</h2>
-          <p class="text-xs text-zinc-500">Generate a schema-compliant Markdown file to copy into your submission</p>
+          <h2 class="text-base font-semibold text-slate-900 font-display">Interactive Markdown Generator</h2>
+          <p class="text-xs text-slate-500 font-sans">Generate a schema-compliant Markdown file to copy into your submission</p>
         </div>
-        <span class="text-xs font-mono text-zinc-400">Instant Preview</span>
+        <span class="text-xs font-mono text-cyan-700 bg-cyan-50 border border-cyan-200/70 px-2 py-0.5 rounded-md">Instant Preview</span>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
         <div>
-          <label class="block font-mono text-zinc-600 mb-1">Software Title</label>
+          <label class="block font-mono text-slate-600 mb-1 text-[11px]">Software Title</label>
           <input
             id="page-gen-title"
             type="text"
             placeholder="e.g. Autokroma Influx"
-            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:outline-none"
+            class="w-full bg-slate-50 border border-cyan-500/20 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 rounded-xl px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none transition-all"
           />
         </div>
 
         <div>
-          <label class="block font-mono text-zinc-600 mb-1">Category</label>
+          <label class="block font-mono text-slate-600 mb-1 text-[11px]">Category</label>
           <select
             id="page-gen-category"
-            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-700 focus:outline-none cursor-pointer"
+            class="w-full bg-slate-50 border border-cyan-500/20 focus:border-cyan-500 rounded-xl px-3 py-2 text-slate-700 focus:outline-none cursor-pointer transition-all"
           >
             {categories.map((c) => <option value={c}>{c}</option>)}
           </select>
         </div>
 
         <div class="sm:col-span-2">
-          <label class="block font-mono text-zinc-600 mb-1">One-Sentence Pitch (Tagline)</label>
+          <label class="block font-mono text-slate-600 mb-1 text-[11px]">One-Sentence Pitch (Tagline)</label>
           <input
             id="page-gen-tagline"
             type="text"
             placeholder="e.g. Native MKV and modern codec importer for Premiere & Resolve."
-            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:outline-none"
+            class="w-full bg-slate-50 border border-cyan-500/20 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 rounded-xl px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none transition-all"
           />
         </div>
 
         <div>
-          <label class="block font-mono text-zinc-600 mb-1">NLE Compatibility</label>
+          <label class="block font-mono text-slate-600 mb-1 text-[11px]">NLE Compatibility</label>
           <input
             id="page-gen-nle"
             type="text"
             placeholder="Premiere Pro, DaVinci Resolve"
-            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:outline-none"
+            class="w-full bg-slate-50 border border-cyan-500/20 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 rounded-xl px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none transition-all"
           />
         </div>
 
         <div>
-          <label class="block font-mono text-zinc-600 mb-1">Pricing Model</label>
+          <label class="block font-mono text-slate-600 mb-1 text-[11px]">Pricing Model</label>
           <select
             id="page-gen-pricing"
-            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-700 focus:outline-none cursor-pointer"
+            class="w-full bg-slate-50 border border-cyan-500/20 focus:border-cyan-500 rounded-xl px-3 py-2 text-slate-700 focus:outline-none cursor-pointer transition-all"
           >
             <option value="Free">Free</option>
             <option value="Open-Source">Open-Source</option>
@@ -163,34 +171,34 @@ const categories = [
         </div>
 
         <div class="sm:col-span-2">
-          <label class="block font-mono text-zinc-600 mb-1">The Bottleneck</label>
+          <label class="block font-mono text-slate-600 mb-1 text-[11px]">The Bottleneck</label>
           <textarea
             id="page-gen-bottleneck"
             rows="2"
             placeholder="What slows down the editor?"
-            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:outline-none"
+            class="w-full bg-slate-50 border border-cyan-500/20 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 rounded-xl px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none transition-all"
           ></textarea>
         </div>
 
         <div class="sm:col-span-2">
-          <label class="block font-mono text-zinc-600 mb-1">The Solution</label>
+          <label class="block font-mono text-slate-600 mb-1 text-[11px]">The Solution</label>
           <textarea
             id="page-gen-solution"
             rows="2"
             placeholder="How does this tool solve it on the timeline?"
-            class="w-full bg-zinc-50 border border-zinc-200 focus:border-zinc-400 rounded-lg px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:outline-none"
+            class="w-full bg-slate-50 border border-cyan-500/20 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 rounded-xl px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none transition-all"
           ></textarea>
         </div>
       </div>
 
       <!-- Code Output -->
-      <div class="space-y-2 pt-4 border-t border-zinc-100">
+      <div class="space-y-2 pt-4 border-t border-slate-100">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-mono text-zinc-400 uppercase">Live Output</span>
+          <span class="text-xs font-mono text-cyan-700/80 uppercase">Live Output</span>
           <button
             id="page-copy-btn"
             type="button"
-            class="inline-flex items-center gap-1.5 px-3 py-1 text-xs text-zinc-700 hover:text-black font-medium transition-colors cursor-pointer"
+            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs text-cyan-700 hover:text-cyan-900 bg-cyan-50 hover:bg-cyan-100/80 border border-cyan-200/80 rounded-lg font-medium transition-colors cursor-pointer"
           >
             <Copy class="w-3.5 h-3.5" />
             <span id="page-copy-label">Copy Code</span>
@@ -198,7 +206,7 @@ const categories = [
         </div>
         <pre
           id="page-gen-preview"
-          class="p-4 rounded-xl bg-zinc-900 font-mono text-xs text-zinc-100 overflow-x-auto select-all"
+          class="p-4 rounded-xl bg-slate-950 font-mono text-xs text-cyan-400 border border-cyan-500/30 overflow-x-auto select-all max-h-56"
         ></pre>
       </div>
     </div>

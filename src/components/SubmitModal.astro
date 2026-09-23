@@ -15,8 +15,8 @@ const categories = [
 
 <dialog
   id="submit-tool-dialog"
-  closedby="any"
   aria-label="Submit a Tool to Editors Den"
+  aria-modal="true"
   class="fixed inset-0 m-auto w-full max-w-xl bg-white/95 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-[0_16px_48px_rgba(14,165,233,0.15)] p-0 text-slate-900 backdrop:bg-slate-900/30 backdrop:backdrop-blur-xs overflow-hidden outline-none"
 >
   <div class="flex flex-col max-h-[85vh]">
@@ -48,7 +48,7 @@ const categories = [
           <p class="text-xs text-slate-500">Standardized issue template for quick review and merge.</p>
         </div>
         <a
-          href="https://github.com/editors-den/archive/issues/new?template=tool_submission.yml"
+          href="https://github.com/editorsden/editorsden.github.io/issues/new?template=tool_submission.yml"
           target="_blank"
           rel="noopener noreferrer"
           class="shrink-0 inline-flex items-center gap-1 px-4 py-2 text-xs font-medium text-white bg-slate-900 hover:bg-cyan-600 rounded-full transition-colors shadow-xs"
@@ -239,16 +239,9 @@ tags:
     });
   }
 
-  if (dialog && !('closedBy' in HTMLDialogElement.prototype)) {
+  if (dialog) {
     dialog.addEventListener('click', (event) => {
-      if (event.target !== dialog) return;
-      const rect = dialog.getBoundingClientRect();
-      const isDialogContent =
-        rect.top <= event.clientY &&
-        event.clientY <= rect.top + rect.height &&
-        rect.left <= event.clientX &&
-        event.clientX <= rect.left + rect.width;
-      if (!isDialogContent) {
+      if (event.target === dialog) {
         dialog.close();
       }
     });

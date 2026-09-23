@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ChannelLogo from '../../components/ChannelLogo.astro';
 import { getCollection, render } from 'astro:content';
-import { ArrowLeft, Clock, ExternalLink, Video } from '@lucide/astro';
+import { ArrowLeft, Clock, ExternalLink, Video, Share2 } from '@lucide/astro';
 import { withBase } from '../../lib/path';
 
 export async function getStaticPaths() {
@@ -17,9 +17,13 @@ const { tut } = Astro.props;
 const { data, id } = tut;
 const { Content } = await render(tut);
 
-const initialLetter = data.title.charAt(0).toUpperCase();
-
 const allCategories = data.categories && data.categories.length > 0 ? data.categories : [data.category];
+
+// Related creators sharing categories or niches
+const allTutorials = await getCollection('tutorials');
+const relatedTutorials = allTutorials
+  .filter((t) => t.id !== id && (t.data.category === data.category || (t.data.categories || []).some(c => allCategories.includes(c))))
+  .slice(0, 3);
 
 function getCategoryStyle(cat: string) {
   switch (cat) {
@@ -63,7 +67,7 @@ function getCategoryStyle(cat: string) {
     <div class="p-6 sm:p-8 rounded-[28px] bg-white/90 backdrop-blur-xl border border-slate-200/80 shadow-[0_10px_30px_-10px_rgba(15,23,42,0.06)] space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
         <div class="flex items-center gap-4">
-          <ChannelLogo id={id} name={data.title} class="w-14 h-14 rounded-2xl shadow-md" />
+          <ChannelLogo id={id} name={data.title} class="w-14 h-14 rounded-2xl shadow-md" loading="eager" fetchpriority="high" width={56} height={56} />
           <div>
             <div class="flex items-center gap-2 flex-wrap mb-1">
               {allCategories.map((cat) => (
@@ -84,18 +88,31 @@ function getCategoryStyle(cat: string) {
           </div>
         </div>
 
-        <!-- Big Primary YouTube CTA -->
-        <a
-          href={data.youtube_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-red-600 hover:bg-red-700 transition-all shadow-sm shrink-0 cursor-pointer"
-        >
-          <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24">
-            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-          </svg>
-          <span>YouTube</span>
-        </a>
+        <!-- Action CTAs: Share + YouTube -->
+        <div class="flex items-center gap-2.5 shrink-0 flex-wrap sm:flex-nowrap">
+          <button
+            id="share-channel-btn"
+            type="button"
+            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-medium text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200/80 rounded-full transition-colors cursor-pointer shadow-2xs"
+            title="Share link to this channel"
+          >
+            <Share2 class="w-3.5 h-3.5 text-cyan-600" />
+            <span id="share-channel-label">Share</span>
+          </button>
+
+          <!-- Big Primary YouTube CTA -->
+          <a
+            href={data.youtube_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-red-600 hover:bg-red-700 transition-all shadow-sm shrink-0 cursor-pointer"
+          >
+            <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+            <span>YouTube</span>
+          </a>
+        </div>
       </div>
 
       <p class="text-sm sm:text-base text-slate-600 leading-relaxed font-sans">
@@ -128,6 +145,39 @@ function getCategoryStyle(cat: string) {
       <Content />
     </div>
 
+    <!-- Related Creators & Masterclasses -->
+    {relatedTutorials.length > 0 && (
+      <div class="pt-8 border-t border-slate-200 space-y-4">
+        <h2 class="text-sm font-semibold text-slate-900 font-display">Related Creators & Masterclasses</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {relatedTutorials.map((rel) => (
+            <a
+              href={withBase(`/tutorials/${rel.id}`)}
+              data-related-tutorial
+              class="related-tutorial-item p-5 rounded-[24px] bg-white/90 backdrop-blur-md hover:bg-white border border-slate-100 shadow-[0_10px_30px_-10px_rgba(15,23,42,0.06)] hover:shadow-[0_20px_40px_-12px_rgba(15,23,42,0.1)] transition-all duration-300 flex flex-col justify-between group"
+            >
+              <div class="space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <div class="w-9 h-9 rounded-xl overflow-hidden shadow-2xs shrink-0 flex items-center justify-center transition-transform group-hover:scale-105">
+                    <ChannelLogo id={rel.id} name={rel.data.title} class="w-9 h-9 rounded-xl" loading="lazy" width={36} height={36} />
+                  </div>
+                  <span class={`text-[10px] font-semibold px-2 py-0.5 rounded-full border font-sans ${getCategoryStyle(rel.data.category)}`}>
+                    {rel.data.category}
+                  </span>
+                </div>
+                <h3 class="font-bold text-sm text-slate-900 group-hover:text-cyan-700 transition-colors font-display">
+                  {rel.data.title}
+                </h3>
+                <p class="text-xs text-slate-500 line-clamp-2 font-sans leading-relaxed">
+                  {rel.data.tagline}
+                </p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
     <!-- Bottom Action Card -->
     <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
       <div>
@@ -146,3 +196,29 @@ function getCategoryStyle(cat: string) {
     </div>
   </div>
 </BaseLayout>
+
+<script>
+  const shareBtn = document.getElementById('share-channel-btn');
+  const shareLabel = document.getElementById('share-channel-label');
+
+  if (shareBtn && shareLabel) {
+    shareBtn.addEventListener('click', async () => {
+      try {
+        if (navigator.share && window.matchMedia('(max-width: 768px)').matches) {
+          await navigator.share({
+            title: document.title,
+            url: window.location.href,
+          });
+        } else {
+          await navigator.clipboard.writeText(window.location.href);
+          shareLabel.textContent = 'Copied!';
+          setTimeout(() => {
+            shareLabel.textContent = 'Share';
+          }, 2000);
+        }
+      } catch (_) {
+        // User cancelled
+      }
+    });
+  }
+</script>

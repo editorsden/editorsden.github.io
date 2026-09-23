@@ -3,11 +3,23 @@ interface Props {
   id: string;
   name?: string;
   class?: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'auto' | 'high' | 'low';
+  width?: number;
+  height?: number;
 }
 
 import { withBase } from '../lib/path';
 
-const { id, name = '', class: className = 'w-11 h-11' } = Astro.props;
+const { 
+  id, 
+  name = '', 
+  class: className = 'w-11 h-11',
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  width = 48,
+  height = 48
+} = Astro.props;
 const initialLetter = (name || id).charAt(0).toUpperCase();
 
 // Official brand logos downloaded directly from verified sources
@@ -61,8 +73,11 @@ const logoSrc = logoMap[id] ? withBase(logoMap[id]) : undefined;
     <img 
       src={logoSrc} 
       alt={`${name || id} logo`} 
+      width={width}
+      height={height}
       class="w-full h-full object-contain p-1 rounded-2xl"
-      loading="lazy"
+      loading={loading}
+      fetchpriority={fetchpriority}
       decoding="async"
     />
   ) : (
